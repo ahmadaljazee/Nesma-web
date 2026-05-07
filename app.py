@@ -1,8 +1,5 @@
 import streamlit as st
 import datetime
-import os
-import sys
-import subprocess
 
 # --- إعدادات الصفحة والهوية البصرية ---
 st.set_page_config(
@@ -61,7 +58,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- نموذج الحجز (الخطوات اللوجستية) ---
+# --- نموذج الحجز ---
 with st.container():
     name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك هنا")
     phone = st.text_input("📞 رقم الجوال", placeholder="07XXXXXXXX")
@@ -86,29 +83,15 @@ with st.container():
         if name and phone:
             st.success(f"تم استلام طلبك يا {name}! جاري تحويلك لتأكيد الحجز مع الإدارة...")
             
+            # تجهيز رابط الواتساب (تأكد من وضع رقمك الصحيح مكان الـ X)
             message = f"طلب حجز جديد من موقع نسمة\nالاسم: {name}\nالجوال: {phone}\nالعاملة: {cleaner}\nالموعد: {date} الساعة {time}"
-            admin_phone = "9627XXXXXXXX" # ضع رقمك هنا
+            admin_phone = "9627XXXXXXXX" 
             whatsapp_url = f"https://wa.me/{admin_phone}?text={message.replace(' ', '%20')}"
             
+            # التوجيه للواتساب بعد ثانيتين
             st.markdown(f'<meta http-equiv="refresh" content="2;url={whatsapp_url}">', unsafe_allow_html=True)
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال لإتمام الحجز.")
 
 # --- تذييل الصفحة ---
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
-
-# --- الجزء الخاص بتشغيل التطبيق على Vercel (بدون تكرار) ---
-def app(environ, start_response):
-    # تشغيل ستريمليت كعملية فرعية مرة واحدة فقط
-    subprocess.Popen([
-        sys.executable, "-m", "streamlit", "run", "app.py",
-        "--server.port", "8080",
-        "--server.address", "0.0.0.0",
-        "--server.headless", "true"
-    ])
-    
-    # إرسال استجابة لـ Vercel لمنع الخطأ 500
-    status = '200 OK'
-    headers = [('Content-type', 'text/html; charset=utf-8')]
-    start_response(status, headers)
-    return [b"Loading Nesma App... Please refresh this page in 10 seconds."]
