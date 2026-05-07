@@ -1,0 +1,8 @@
+{
+  "installCommand": "pip install -r requirements.txt",
+  "build": {
+    "env": {
+      "STREAMLIT_SERVER_PORT": "8501"
+    }
+  }
+}
