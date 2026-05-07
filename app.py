@@ -103,3 +103,8 @@ import sys
 
 def handler(request):
     os.system("streamlit run app.py --server.port 8080")
+# --- إضافة هذا الجزء في نهاية الملف لـ Vercel ---
+def app(environ, start_response):
+    # هذه الدالة فقط لإرضاء Vercel وتوجيهه لتشغيل Streamlit
+    import os
+    os.system("streamlit run app.py --server.port 8080")
