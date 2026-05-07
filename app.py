@@ -97,3 +97,9 @@ with st.container():
 
 # --- تذييل الصفحة المحدث ---
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
+# هذا الجزء فقط لإرضاء Vercel وتشغيل Streamlit داخله
+import os
+import sys
+
+def handler(request):
+    os.system("streamlit run app.py --server.port 8080")
