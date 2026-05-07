@@ -1,8 +1,15 @@
 {
-  "installCommand": "pip install -r requirements.txt",
-  "build": {
-    "env": {
-      "STREAMLIT_SERVER_PORT": "8501"
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ]
 }
