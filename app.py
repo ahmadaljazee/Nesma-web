@@ -1,5 +1,8 @@
 import streamlit as st
 import datetime
+import os
+import sys
+import subprocess
 
 # --- إعدادات الصفحة والهوية البصرية ---
 st.set_page_config(
@@ -66,7 +69,6 @@ with st.container():
     st.markdown("<hr style='border: 0.5px solid #333'>", unsafe_allow_html=True)
     
     st.subheader("اختر النسمة المختصة")
-    # عرض العاملات مع التقييمات كما اتفقنا
     cleaner = st.selectbox(
         "العاملات المتاحات في منطقتك:",
         ["سناء م. ⭐ 4.9 (خبيرة ترتيب)", "أمل ع. ⭐ 4.7 (سريعة الإنجاز)", "ريم س. ⭐ 4.8 (دقة عالية)"]
@@ -80,13 +82,10 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # زر التأكيد والربط اللوجستي
     if st.button("تأكيد حجز نسمة"):
         if name and phone:
-            # رسالة النجاح والربط بالواتساب
             st.success(f"تم استلام طلبك يا {name}! جاري تحويلك لتأكيد الحجز مع الإدارة...")
             
-            # تجهيز رابط الواتساب اللوجستي (نفس منطق كودك السابق)
             message = f"طلب حجز جديد من موقع نسمة\nالاسم: {name}\nالجوال: {phone}\nالعاملة: {cleaner}\nالموعد: {date} الساعة {time}"
             admin_phone = "9627XXXXXXXX" # ضع رقمك هنا
             whatsapp_url = f"https://wa.me/{admin_phone}?text={message.replace(' ', '%20')}"
@@ -95,16 +94,25 @@ with st.container():
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال لإتمام الحجز.")
 
-# --- تذييل الصفحة المحدث ---
+# --- تذييل الصفحة ---
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
-# هذا الجزء فقط لإرضاء Vercel وتشغيل Streamlit داخله
-import os
-import sys
 
-def handler(request):
-    os.system("streamlit run app.py --server.port 8080")
-# --- إضافة هذا الجزء في نهاية الملف لـ Vercel ---
+# --- الجزء الخاص بتشغيل التطبيق على Vercel ---
 def app(environ, start_response):
-    # هذه الدالة فقط لإرضاء Vercel وتوجيهه لتشغيل Streamlit
-    import os
-    os.system("streamlit run app.py --server.port 8080")
+    """
+    هذه الدالة هي نقطة الدخول (Entry Point) لـ Vercel.
+    تقوم بتشغيل Streamlit كعملية فرعية وتخبر السيرفر أن العملية بدأت بنجاح.
+    """
+    # تشغيل ستريمليت في الخلفية
+    subprocess.Popen([
+        sys.executable, "-m", "streamlit", "run", "app.py",
+        "--server.port", "8080",
+        "--server.address", "0.0.0.0",
+        "--server.headless", "true"
+    ])
+    
+    # إرسال استجابة أولية لـ Vercel لمنع الخطأ 500
+    status = '200 OK'
+    headers = [('Content-type', 'text/html; charset=utf-8')]
+    start_response(status, headers)
+    return [b"Loading Nesma App... Please refresh this page in 10 seconds."]
