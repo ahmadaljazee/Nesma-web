@@ -95,5 +95,5 @@ with st.container():
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال لإتمام الحجز.")
 
-# --- تذييل الصفحة ---
-st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesma © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
+# --- تذييل الصفحة المحدث ---
+st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
