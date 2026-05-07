@@ -97,13 +97,9 @@ with st.container():
 # --- تذييل الصفحة ---
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026 | Powered by Nesma-Logistics</p>", unsafe_allow_html=True)
 
-# --- الجزء الخاص بتشغيل التطبيق على Vercel ---
+# --- الجزء الخاص بتشغيل التطبيق على Vercel (بدون تكرار) ---
 def app(environ, start_response):
-    """
-    هذه الدالة هي نقطة الدخول (Entry Point) لـ Vercel.
-    تقوم بتشغيل Streamlit كعملية فرعية وتخبر السيرفر أن العملية بدأت بنجاح.
-    """
-    # تشغيل ستريمليت في الخلفية
+    # تشغيل ستريمليت كعملية فرعية مرة واحدة فقط
     subprocess.Popen([
         sys.executable, "-m", "streamlit", "run", "app.py",
         "--server.port", "8080",
@@ -111,7 +107,7 @@ def app(environ, start_response):
         "--server.headless", "true"
     ])
     
-    # إرسال استجابة أولية لـ Vercel لمنع الخطأ 500
+    # إرسال استجابة لـ Vercel لمنع الخطأ 500
     status = '200 OK'
     headers = [('Content-type', 'text/html; charset=utf-8')]
     start_response(status, headers)
