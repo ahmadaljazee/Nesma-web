@@ -23,10 +23,10 @@ def get_base64_of_bin_file(bin_file):
             return "" # في حال حدث خطأ لا يتوقف التطبيق
     return ""
 
-# محاولة تحميل خلفية bg.png وصورة اللوجو للاستخدام في النبذة
+# محاولة تحميل خلفية bg.png وصفحة اللوجو
 bg_base64 = get_base64_of_bin_file('bg.png')
 
-# --- 2. التنسيق البصري الاحترافي (CSS) - تم إضافة تنسيقات جديدة للنبذة والمميزات ---
+# --- 2. التنسيق البصري الاحترافي (CSS) - تم إضافة تنسيقات النبذة والمميزات ---
 st.markdown(f"""
     <style>
     /* أ. إخفاء شريط Streamlit العلوي والقائمة الجانبية تماماً */
@@ -60,27 +60,12 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    /* هـ. كود توسيط وتنسيق زر الحجز تماماً */
-    .stButton {
-        display: flex !important;
-        justify-content: center !important; /* هذا السطر هو المسؤول عن التوسيط الأفقي */
-        width: 100% !important;
-        margin-top: 20px;
-    }
-
-    div.stButton > button {
-        background-color: #00c853 !important;
-        color: white !important;
-        border-radius: 30px !important;
-        font-weight: bold;
-        height: 55px;
-        width: 100% !important;
-        max-width: 400px; /* يحافظ على حجم متناسق للزر في المنتصف */
-        border: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        font-size: 20px !important;
-        transition: 0.3s ease;
-    }
+    /* هـ. كود توسيط وتنسيق زر الحجز */
+    .stButton {{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }}
 
     div.stButton > button {{
         background-color: #00c853 !important;
@@ -106,7 +91,7 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.7); /* خلفية بيضاء شفافة */
         border-radius: 15px;
         padding: 20px;
-        border: 1px solid #a5d6a7; /* حدود خضراء فاتحة جداً */
+        border: 1px solid #a5d6a7; /* حدود خضراء فاتحة */
         margin-bottom: 25px;
         text-align: right;
         direction: rtl; /* اتجاه النص من اليمين لليسار */
@@ -115,7 +100,7 @@ st.markdown(f"""
         color: #1b5e20;
         font-size: 1.5rem;
         margin-bottom: 10px;
-        border-bottom: 2px solid #00c853; /* خط تحت العنوان */
+        border-bottom: 2px solid #00c853;
         display: inline-block;
         padding-bottom: 5px;
     }}
@@ -139,7 +124,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
     .feature-icon {{
-        color: #00c853; /* لون الإيقونة (أخضر نسمة) */
+        color: #00c853; /* لون الإيقونة */
         margin-left: 10px;
         font-size: 1.2rem;
     }}
@@ -154,7 +139,7 @@ if os.path.exists("logo.png"):
     with col2:
         st.image("logo.png", use_container_width=True)
 
-# ب. العناوين والنصوص الثابتة (الـ Bio المقترح)
+# ب. العناوين والنصوص الثابتة (الـ Bio)
 st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-size: 1.3rem; margin-bottom: 25px;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
 
