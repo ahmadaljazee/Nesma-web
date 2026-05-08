@@ -91,7 +91,7 @@ if os.path.exists("logo.png"):
         st.image("logo.png", use_container_width=True)
 
 st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 1.3rem;'>نظافة.. راحة.. بلمسة ذكية</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 1.3rem;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
 
 # نموذج الحجز
 with st.container():
