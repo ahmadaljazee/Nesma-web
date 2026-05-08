@@ -9,16 +9,16 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- التنسيق البصري الجذري (ألوان نسمة وتوسيط العناصر) ---
+# --- التنسيق البصري (الهوية البصرية لنسمة 2026) ---
 st.markdown("""
     <style>
-    /* خلفية متدرجة تمنع ظهور النسخ القديمة */
+    /* خلفية متدرجة منعشة تليق بروح نسمة */
     .stApp {
         background: linear-gradient(135deg, #fdfcf0 0%, #e8f5e9 100%) !important;
         color: #2e4d3b !important;
     }
     
-    /* تنسيق الحقول */
+    /* تنسيق حقول الإدخال */
     .stTextInput>div>div>input, .stSelectbox>div>div>div {
         background-color: #ffffff !important;
         color: #2e4d3b !important;
@@ -26,7 +26,7 @@ st.markdown("""
         border-radius: 10px !important;
     }
 
-    /* صندوق النبذة الظاهر (بدون زر) */
+    /* صندوق النبذة الظاهر دائماً */
     .static-about-box {
         background-color: rgba(255, 255, 255, 0.6);
         border: 1px solid #a5d6a7;
@@ -39,7 +39,7 @@ st.markdown("""
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    /* تنسيق الزر الأخضر */
+    /* تنسيق زر الحجز الأخضر */
     div.stButton > button {
         background-color: #8bc34a !important;
         color: white !important;
@@ -49,7 +49,6 @@ st.markdown("""
         width: 100%;
         border: none !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
-        transition: 0.3s;
     }
     
     div.stButton > button:hover {
@@ -61,7 +60,6 @@ st.markdown("""
         text-align: center;
         color: #2e7d32;
         font-weight: bold;
-        margin-bottom: 5px;
     }
     
     .tagline {
@@ -73,26 +71,25 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- محتوى الصفحة ---
+# --- واجهة المستخدم ---
 st.markdown("<h1 class='main-header'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown("<p class='tagline'>نظافة.. راحة.. بلمسة ذكية</p>", unsafe_allow_html=True)
 
-# --- قسم نبذة عنا الظاهر (Static About Us) ---
+# --- قسم النبذة الظاهرة (بدون كبس زر) ---
 st.markdown("""
 <div class="static-about-box">
     <strong>✨ لماذا نسمة؟</strong><br>
-    نحن في <b>نسمة</b> نؤمن أن البيت النظيف هو بداية يوم سعيد. 
-    نضع بين يديكِ نخبة من العاملات المختصات لضمان منزل يفوح بالنظافة والترتيب بلمسة عصرية تضمن لكِ الراحة والخصوصية.
+    في <b>نسمة</b>، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. نوفر لكِ نخبة من العاملات المختصات لضمان أعلى معايير الترتيب والتعقيم بخصوصية تامة.
     <br><br>
-    ✅ <b>دقة واحترافية:</b> نلتزم بالمواعيد والجودة.<br>
-    ✅ <b>ثقة وأمان:</b> عاملات مدربات وصاحبات خبرة.<br>
-    ✅ <b>سهولة ذكية:</b> حجز فوري ومباشر عبر الواتساب.
+    ✅ <b>دقة واحترافية:</b> نلتزم بأعلى معايير الجودة.<br>
+    ✅ <b>ثقة وأمان:</b> كادرنا مدرب وموثوق لراحتك.<br>
+    ✅ <b>سهولة ذكية:</b> حجز سريع ومباشر عبر الواتساب.
 </div>
 """, unsafe_allow_html=True)
 
 # --- نموذج الحجز ---
 with st.container():
-    name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك هنا")
+    name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك الكريم")
     phone = st.text_input("📞 رقم الجوال", placeholder="07XXXXXXXX")
     
     cleaner = st.selectbox(
@@ -109,20 +106,20 @@ with st.container():
     st.markdown("<br>", unsafe_allow_html=True)
     
     # --- توسيط زر الحجز تماماً ---
-    left_space, center_button, right_space = st.columns([1, 2, 1])
+    left_side, center_btn, right_side = st.columns([1, 2, 1])
     
-    with center_button:
+    with center_btn:
         if st.button("تأكيد البيانات وإرسال الحجز"):
             if name and phone:
-                raw_message = f"طلب حجز جديد من موقع نسمة\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 العاملة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
-                encoded_message = urllib.parse.quote(raw_message)
-                admin_phone = "962777278329"
-                whatsapp_url = f"https://wa.me/{admin_phone}?text={encoded_message}"
+                raw_msg = f"طلب حجز جديد من نسمة 🌬️\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 المختصة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
+                encoded_msg = urllib.parse.quote(raw_msg)
+                admin_no = "962777278329"
+                whatsapp_link = f"https://wa.me/{admin_no}?text={encoded_msg}"
                 
-                js_code = f"<script>window.location.href = '{whatsapp_url}';</script>"
-                st.components.v1.html(js_code, height=0)
+                js = f"<script>window.location.href = '{whatsapp_link}';</script>"
+                st.components.v1.html(js, height=0)
                 st.info("جاري التحويل إلى واتساب...")
             else:
-                st.warning("الرجاء إدخال الاسم ورقم الجوال أولاً.")
+                st.warning("يرجى إدخال الاسم ورقم الهاتف للمتابعة.")
 
 st.markdown("<p style='text-align: center; font-size: 11px; color: #999; margin-top: 60px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
