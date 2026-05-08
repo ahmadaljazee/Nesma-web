@@ -7,7 +7,7 @@ import os
 # --- إعدادات الصفحة ---
 st.set_page_config(
     page_title="نسمة | Nesma",
-    page_icon="🌬️",
+    page_icon="logo.png",  # هذا الأمر يضع شعارك مكان أيقونة المتصفح
     layout="centered"
 )
 
