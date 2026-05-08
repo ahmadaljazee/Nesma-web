@@ -18,9 +18,12 @@
         .about-box { background: #e8f5e9; padding: 15px; border-radius: 12px; font-size: 14px; line-height: 1.6; margin-bottom: 20px; text-align: justify; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #2e7d32; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .gps-btn { background: #ffffff; border: 1px dashed #2e7d32; padding: 10px; border-radius: 10px; cursor: pointer; color: #2e7d32; font-weight: bold; margin: 10px 0; }
-        .submit-btn { background: #00c853; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .submit-btn { background: #2e7d32; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; }
+        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .submit-btn:hover, .whatsapp-btn:hover { transform: scale(1.02); opacity: 0.9; }
         .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; font-size: 12px; font-weight: bold; }
         .feat-item { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 20px; border: 1px solid #a5d6a7; }
+        hr { margin: 25px 0; border: 0; border-top: 1px dashed #a5d6a7; }
     </style>
 </head>
 <body>
@@ -34,7 +37,7 @@
                 في "نسمة"، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. نوفر لكِ نخبة من العاملات المختصات بخصوصية تامة واحترافية تليق بكِ.
             </div>
 
-            <form action="/book" method="POST">
+            <form action="/save_booking" method="POST">
                 <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
                 <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
                 <select name="cleaner">
@@ -52,8 +55,15 @@
                 
                 <div class="gps-btn" onclick="getLocation()" id="gpsLabel">📍 اضغط لتحديد موقعك تلقائياً</div>
 
-                <button type="submit" class="submit-btn">تأكيد الحجز (واتساب)</button>
+                <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
             </form>
+
+            <hr>
+            
+            <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">هل لديك استفسار؟ تواصل معنا مباشرة</p>
+            <a href="https://wa.me/962777278329" class="whatsapp-btn" target="_blank">
+                💬 دردشة واتساب سريعة
+            </a>
 
             <div class="features">
                 <span class="feat-item">✨ عاملات مختصات</span>
