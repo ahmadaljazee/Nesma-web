@@ -60,12 +60,27 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    /* هـ. كود توسيط وتنسيق زر الحجز */
-    .stButton {{
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }}
+    /* هـ. كود توسيط وتنسيق زر الحجز تماماً */
+    .stButton {
+        display: flex !important;
+        justify-content: center !important; /* هذا السطر هو المسؤول عن التوسيط الأفقي */
+        width: 100% !important;
+        margin-top: 20px;
+    }
+
+    div.stButton > button {
+        background-color: #00c853 !important;
+        color: white !important;
+        border-radius: 30px !important;
+        font-weight: bold;
+        height: 55px;
+        width: 100% !important;
+        max-width: 400px; /* يحافظ على حجم متناسق للزر في المنتصف */
+        border: none !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        font-size: 20px !important;
+        transition: 0.3s ease;
+    }
 
     div.stButton > button {{
         background-color: #00c853 !important;
