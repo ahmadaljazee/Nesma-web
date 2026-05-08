@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نسمة | Nesma</title>
+    
+    <title>نسمة | Nesma - خدمات تنظيف منازل احترافية في الأردن</title>
+    <meta name="description" content="احجز أفضل عاملات التنظيف بالساعة في عمان مع نسمة. جودة، أمان، وخصوصية تامة لمنزلك.">
+    <meta name="keywords" content="تنظيف منازل الأردن, عاملات بالساعة, خدمات نظافة عمان, نسمة, Nesma Cleaning">
+    
     <style>
         :root { --main-green: #2e7d32; --light-green: #00c853; }
         body {
@@ -12,7 +16,6 @@
             background-size: cover; background-position: center; background-attachment: fixed;
             font-family: 'Segoe UI', Tahoma, sans-serif; color: #0a3d0d;
         }
-        /* شريط التبويبات العلوي */
         .tabs-header {
             position: sticky; top: 0; z-index: 1000;
             display: flex; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -24,19 +27,21 @@
             transition: 0.3s; border-bottom: 3px solid transparent; font-size: 14px;
         }
         .tab-btn.active { border-bottom: 3px solid var(--light-green); background: #f1f8e9; }
-
         .container { max-width: 450px; margin: auto; padding: 20px; text-align: center; }
         .tab-content { display: none; animation: fadeIn 0.5s; }
         .tab-content.active { display: block; }
-
         .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; border: 1px solid #a5d6a7; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .logo { width: 100px; margin: 10px 0; }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--main-green); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .submit-btn { background: var(--main-green); color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .whatsapp-btn { background: #25D366; color: white; display: block; padding: 15px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 10px; }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main-green); text-align: right; }
+        
+        /* تصميم مربعات الاختيار */
+        .extras-container { text-align: right; margin: 15px 0; padding: 15px; background: #f9fdf9; border-radius: 12px; border: 1px solid #c8e6c9; }
+        .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; margin-top: 10px; }
+        .extras-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -63,8 +68,21 @@
                         <option>أمل ع. ⭐ 4.7</option>
                         <option>ريم س. ⭐ 4.8</option>
                     </select>
-                    <input type="date" name="date" required>
-                    <input type="time" name="time" required>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" name="date" required>
+                        <input type="time" name="time" required>
+                    </div>
+
+                    <div class="extras-container">
+                        <p style="font-weight: bold; margin: 0; color: var(--main-green);">📦 مستلزمات إضافية مطلوبة:</p>
+                        <div class="extras-grid">
+                            <label><input type="checkbox" name="extra" value="مسحوق غسيل"> مسحوق غسيل</label>
+                            <label><input type="checkbox" name="extra" value="مسحوق جلي"> مسحوق جلي</label>
+                            <label><input type="checkbox" name="extra" value="معطر جو"> معطر جو</label>
+                            <label><input type="checkbox" name="extra" value="مكانس ومماسح"> مكانس ومماسح</label>
+                        </div>
+                    </div>
+
                     <input type="hidden" name="lat" id="lat">
                     <input type="hidden" name="lon" id="lon">
                     <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
@@ -76,7 +94,7 @@
         <div id="about" class="tab-content">
             <div class="card">
                 <h2>من نحن؟</h2>
-                <p>نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات لضمان راحتكِ وخصوصيتكِ.</p>
+                <p>نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات.</p>
             </div>
         </div>
 
@@ -95,9 +113,8 @@
         <div id="contact" class="tab-content">
             <div class="card">
                 <h2>تواصل معنا</h2>
-                <p>نحن متاحون لخدمتكم على مدار الساعة</p>
                 <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
-                <p>📧 Email: info@nesmajo.com</p>
+                <p style="margin-top: 15px;">📧 Email: info@nesmajo.com</p>
             </div>
         </div>
 
