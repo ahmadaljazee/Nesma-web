@@ -2,14 +2,14 @@ import streamlit as st
 import datetime
 import urllib.parse
 
-# --- إعدادات الصفحة والهوية البصرية ---
+# --- إعدادات الصفحة ---
 st.set_page_config(
     page_title="نسمة | Nesma",
     page_icon="🌬️",
     layout="centered"
 )
 
-# --- تطبيق النسق الداكن والألوان ---
+# --- التنسيق البصري (الهوية البصرية لنسمة) ---
 st.markdown(f"""
     <style>
     .stApp {{
@@ -22,7 +22,6 @@ st.markdown(f"""
         border: 1px solid #8ff48f !important;
         border-radius: 10px;
     }}
-    /* تنسيق الزر الرئيسي */
     .stButton>button {{
         background-color: #8ff48f !important;
         color: #000000 !important;
@@ -49,9 +48,8 @@ with st.container():
     name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك هنا")
     phone = st.text_input("📞 رقم الجوال", placeholder="07XXXXXXXX")
     
-    st.subheader("اختر النسمة المختصة")
     cleaner = st.selectbox(
-        "العاملات المتاحات في منطقتك:",
+        "اختر العاملة المختصة:",
         ["سناء م. ⭐ 4.9", "أمل ع. ⭐ 4.7", "ريم س. ⭐ 4.8"]
     )
 
@@ -63,27 +61,28 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # عند الضغط على الزر
     if st.button("تأكيد البيانات وإرسال الحجز"):
         if name and phone:
-            # تجهيز الرسالة
-            raw_message = f"طلب حجز جديد من موقع نسمة\nالاسم: {name}\nالجوال: {phone}\nالعاملة: {cleaner}\nالموعد: {date} الساعة {time}"
-            
-            # تشفير الرسالة
+            # 1. تجهيز الرسالة
+            raw_message = f"طلب حجز جديد من موقع نسمة\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 العاملة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
             encoded_message = urllib.parse.quote(raw_message)
+            
+            # 2. رابط الواتساب
             admin_phone = "962777278329"
             whatsapp_url = f"https://wa.me/{admin_phone}?text={encoded_message}"
             
-            st.success(f"تم التأكيد يا {name}! جاري فتح واتساب تلقائياً...")
-            
-            # --- كود JavaScript للفتح التلقائي ---
-            js = f"""
+            # 3. تنفيذ الفتح التلقائي عبر JavaScript مخفي
+            # نستخدم target="_self" لضمان الفتح السلس في بعض المتصفحات
+            js_code = f"""
             <script>
-                window.open("{whatsapp_url}", "_blank");
+                window.location.href = "{whatsapp_url}";
             </script>
             """
-            st.components.v1.html(js, height=0)
+            st.components.v1.html(js_code, height=0)
             
+            st.info("جاري التحويل إلى واتساب...")
         else:
-            st.warning("الرجاء إدخال الاسم ورقم الجوال لإتمام الحجز.")
+            st.warning("الرجاء إدخال الاسم ورقم الجوال أولاً.")
 
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
