@@ -7,7 +7,7 @@ import os
 # --- إعدادات الصفحة ---
 st.set_page_config(
     page_title="نسمة | Nesma",
-    page_icon="🌬️",
+    page_icon="logo.png",
     layout="centered"
 )
 
@@ -22,8 +22,8 @@ def get_base64(bin_file):
             return ""
     return ""
 
-# محاولة تحميل الصورة (nesma.png)
-bin_str = get_base64('nesma.png')
+# محاولة تحميل الصورة (logo.png)
+bin_str = get_base64('logo.png')
 
 # --- التنسيق البصري الاحترافي (CSS) ---
 st.markdown(f"""
