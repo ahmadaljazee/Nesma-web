@@ -35,13 +35,21 @@ def init_firebase():
     return firebase_admin.get_app()
 
 firebase_app = init_firebase()
+
+# --- تم إصلاح هذا الجزء ليعمل بشكل صحيح ---
 if firebase_app:
-    # تم التعديل هنا لربط قاعدة البيانات default1 حصراً
-    db = firestore.client(database="default1")
+    try:
+        # ربط قاعدة البيانات default1 حصراً باستخدام database_id
+        db = firestore.client(database_id="default1")
+    except Exception as e:
+        st.error(f"❌ لم يتم العثور على القاعدة default1: {e}")
+        st.stop()
 else:
     st.warning("⚠️ التطبيق يعمل بدون حفظ في قاعدة البيانات حالياً.")
+    # لا نضع st.stop هنا لكي تظهر الواجهة للزبون حتى لو تعطلت القاعدة
+# ------------------------------------------
 
-# --- 3. التنسيق البصري الاحترافي (نفس الكود الأصلي بدون تعديل) ---
+# --- 3. التنسيق البصري الاحترافي ---
 def get_base64_of_bin_file(bin_file):
     if os.path.exists(bin_file):
         try:
@@ -100,7 +108,7 @@ st.markdown(f"""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 4. واجهة التطبيق (اللوجو، النبذة، المميزات) ---
+# --- 4. واجهة التطبيق ---
 if os.path.exists("logo.png"):
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2: st.image("logo.png", use_container_width=True)
