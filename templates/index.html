@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+
     <title>نسمة | Nesma - خدمات تنظيف منازل احترافية في الأردن</title>
     <meta name="description" content="احجز أفضل عاملات التنظيف بالساعة في عمان مع نسمة. جودة، أمان، وخصوصية تامة لمنزلك.">
     <meta name="keywords" content="تنظيف منازل الأردن, عاملات بالساعة, خدمات نظافة عمان, نسمة, Nesma Cleaning">
@@ -38,7 +42,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main-green); text-align: right; }
         
-        /* تصميم مربعات الاختيار */
         .extras-container { text-align: right; margin: 15px 0; padding: 15px; background: #f9fdf9; border-radius: 12px; border: 1px solid #c8e6c9; }
         .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; margin-top: 10px; }
         .extras-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
@@ -64,7 +67,7 @@
                     <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
                     <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
                     <select name="cleaner">
-                       <option>اختيار العامله-اختياري- </option>
+                        <option value="">اختيار العاملة - اختياري -</option>
                         <option>سناء م. ⭐ 4.9</option>
                         <option>أمل ع. ⭐ 4.7</option>
                         <option>ريم س. ⭐ 4.8</option>
@@ -93,31 +96,21 @@
         </div>
 
         <div id="about" class="tab-content">
-    <div class="card">
-        <h2 style="color: var(--main-green); margin-bottom: 20px;">من نحن؟ </h2>
-        <p style="font-weight: bold; font-size: 1.1rem; line-height: 1.6;">
-            نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات.
-        </p>
-        
-        <p style="margin-bottom: 25px;">
-            عائلـة نسمة تؤمن بأن المنزل هو مملكة السكينة، ولأننا نقدر خصوصيتك وتفاصيل يومك، لم يكن شعارنا مجرد أوراق خضراء، بل هو ميثاق نلتزم به تجاهك عبر ثلاث ركائز أساسية:
-        </p>
-
-        <div style="text-align: right;">
-            <div class="info-card">
-                <b>🛡️ الرعاية:</b> نحن لا نقوم فقط بالتنظيف لمنزلك، وإنما نعتني به بأيدي أمينة تقدر قيمة التفاصيل لنوفر لك بيئة مريحة تليق بك وبعائلتك.
-            </div>
-            
-            <div class="info-card">
-                <b>⭐ الجودة:</b> نضع بين يديك خبرة احترافية ومعايير دقيقة، فكل خدمة نقدمها هي بصمة إتقان تضمن لك الحصول على أفضل النتائج في كل زيارة.
-            </div>
-            
-            <div class="info-card">
-                <b>🔒 الأمان:</b> أمان عائلتك هو الورقة الأهم في عهدنا، فنحن نختار فريقنا بعناية فائقة مع سجلات طبية وأمنية موثوقة لتستمتع بخدماتنا وأنت مطمئن البال.
+            <div class="card">
+                <h2 style="color: var(--main-green); margin-bottom: 20px;">من نحن؟ </h2>
+                <p style="font-weight: bold; font-size: 1.1rem; line-height: 1.6;">
+                    نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات.
+                </p>
+                <p style="margin-bottom: 25px;">
+                    عائلـة نسمة تؤمن بأن المنزل هو مملكة السكينة، ولأننا نقدر خصوصيتك وتفاصيل يومك، لم يكن شعارنا مجرد أوراق خضراء، بل هو ميثاق نلتزم به تجاهك عبر ثلاث ركائز أساسية:
+                </p>
+                <div style="text-align: right;">
+                    <div class="info-card"><b>🛡️ الرعاية:</b> نحن لا نقوم فقط بالتنظيف لمنزلك، وإنما نعتني به بأيدي أمينة تقدر قيمة التفاصيل لنوفر لك بيئة مريحة تليق بك وبعائلتك.</div>
+                    <div class="info-card"><b>⭐ الجودة:</b> نضع بين يديك خبرة احترافية ومعايير دقيقة، فكل خدمة نقدمها هي بصمة إتقان تضمن لك الحصول على أفضل النتائج في كل زيارة.</div>
+                    <div class="info-card"><b>🔒 الأمان:</b> أمان عائلتك هو الورقة الأهم في عهدنا، فنحن نختار فريقنا بعناية فائقة مع سجلات طبية وأمنية موثوقة لتستمتع بخدماتنا وأنت مطمئن البال.</div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <div id="services" class="tab-content">
             <div class="info-card">✨ تنظيف منازل دوري</div>
@@ -143,6 +136,13 @@
     </div>
 
     <script>
+        // تفعيل الـ Service Worker لتحويل الموقع لتطبيق
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tab-content");
@@ -161,6 +161,8 @@
                     document.getElementById("lat").value = pos.coords.latitude;
                     document.getElementById("lon").value = pos.coords.longitude;
                     btn.innerText = "✅ تم تحديد موقعك";
+                }, () => {
+                    btn.innerText = "❌ تعذر تحديد الموقع";
                 });
             }
         }
