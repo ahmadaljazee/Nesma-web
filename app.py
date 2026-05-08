@@ -23,13 +23,13 @@ def get_base64_of_bin_file(bin_file):
             return "" # في حال حدث خطأ لا يتوقف التطبيق
     return ""
 
-# محاولة تحميل خلفية bg.png
+# محاولة تحميل خلفية bg.png وصورة اللوجو للاستخدام في النبذة
 bg_base64 = get_base64_of_bin_file('bg.png')
 
-# --- 2. التنسيق البصري الاحترافي (CSS) ---
+# --- 2. التنسيق البصري الاحترافي (CSS) - تم إضافة تنسيقات جديدة للنبذة والمميزات ---
 st.markdown(f"""
     <style>
-    /* أ. إخفاء شريط Streamlit العلوي والقائمة الجانبية تماماً لإعطاء مظهر تطبيق خاص */
+    /* أ. إخفاء شريط Streamlit العلوي والقائمة الجانبية تماماً */
     header {{visibility: hidden !important;}}
     #MainMenu {{visibility: hidden !important;}}
     footer {{visibility: hidden !important;}}
@@ -37,71 +37,137 @@ st.markdown(f"""
     
     /* ب. ضبط خلفية الصفحة بالكامل باستخدام bg.png */
     .stApp {{
-        /* تراكب لوني خفيف جداً (White Linear Gradient) فوق الصورة لزيادة وضوح النصوص */
         background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
                           url("data:image/png;base64,{bg_base64}");
-        background-size: cover; /* جعل الصورة تغطي كامل الشاشة */
-        background-position: center; /* توسيط الصورة */
-        background-attachment: fixed; /* منع الصورة من التحرك عند التمرير */
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }}
     
-    /* ج. تنسيق النصوص لتكون غامقة جداً وواضحة فوق الخلفية */
+    /* ج. تنسيق النصوص الأساسية */
     label, p, span, h1, h2, h3 {{
-        color: #0a3d0d !important; /* أخضر غامق جداً قريب للأسود */
-        font-weight: 800 !important; /* عريض جداً */
-        text-shadow: 1px 1px 3px rgba(255,255,255,0.7); /* ظل أبيض خفيف حول النص للتباين */
+        color: #0a3d0d !important; 
+        font-weight: 800 !important;
+        text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
     }}
 
     /* د. تحسين شكل حقول الإدخال */
     .stTextInput>div>div>input, .stSelectbox>div>div>div, .stDateInput>div>div>input {{
-        background-color: rgba(255, 255, 255, 0.95) !important; /* بيضاء تقريباً وغير شفافة */
-        border: 2px solid #2e7d32 !important; /* حدود خضراء واضحة */
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border: 2px solid #2e7d32 !important;
         border-radius: 12px !important;
         color: black !important;
         font-weight: 600 !important;
     }}
 
-    /* هـ. كود توسيط الزر تماماً وتنسيقه */
+    /* هـ. كود توسيط وتنسيق زر الحجز */
     .stButton {{
         display: flex;
-        justify-content: center; /* توسيط أفقي للحاوية */
+        justify-content: center;
         width: 100%;
     }}
 
     div.stButton > button {{
-        background-color: #00c853 !important; /* أخضر زاهي (نسمة) */
+        background-color: #00c853 !important;
         color: white !important;
         border-radius: 30px !important;
         font-weight: bold;
         height: 55px;
         width: 100%;
-        max-width: 400px; /* تحديد عرض أقصى للزر ليبقى أنيقاً على الشاشات الكبيرة */
+        max-width: 400px;
         border: none !important;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* ظل ناعم */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         font-size: 20px !important;
-        transition: 0.3s ease; /* حركة ناعمة عند التأشير */
+        transition: 0.3s ease;
     }}
     
     div.stButton > button:hover {{
-        background-color: #00e676 !important; /* لون أفتح قليلاً عند التأشير */
-        transform: scale(1.02); /* تكبير بسيط */
+        background-color: #00e676 !important;
+        transform: scale(1.02);
+    }}
+
+    /* و. [جديد] تنسيق حاوية النبذة التعريفية */
+    .about-section {{
+        background-color: rgba(255, 255, 255, 0.7); /* خلفية بيضاء شفافة */
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid #a5d6a7; /* حدود خضراء فاتحة جداً */
+        margin-bottom: 25px;
+        text-align: right;
+        direction: rtl; /* اتجاه النص من اليمين لليسار */
+    }}
+    .about-title {{
+        color: #1b5e20;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #00c853; /* خط تحت العنوان */
+        display: inline-block;
+        padding-bottom: 5px;
+    }}
+    .about-text {{
+        color: #0a3d0d;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        font-weight: 500 !important;
+    }}
+
+    /* ز. [جديد] تنسيق حاوية المميزات سريعاً */
+    .features-section {{
+        text-align: right;
+        direction: rtl;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }}
+    .feature-item {{
+        font-size: 1.1rem;
+        color: #0a3d0d;
+        font-weight: 700 !important;
+    }}
+    .feature-icon {{
+        color: #00c853; /* لون الإيقونة (أخضر نسمة) */
+        margin-left: 10px;
+        font-size: 1.2rem;
     }}
     </style>
     """, unsafe_allow_html=True)
 
 # --- 3. واجهة التطبيق ---
 
-# أ. عرض اللوجو الرئيسي موسطاً
+# أ. عرض اللوجو الرئيسي موسطاً (logo.png)
 if os.path.exists("logo.png"):
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         st.image("logo.png", use_container_width=True)
 
-# ب. العناوين والنصوص الثابتة
+# ب. العناوين والنصوص الثابتة (الـ Bio المقترح)
 st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 1.3rem;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 1.3rem; margin-bottom: 25px;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
 
-# ج. حاوية نموذج الحجز
+# [جديد] ج. إضافة النبذة التعريفية المطولة
+st.markdown(f"""
+    <div class='about-section'>
+        <div class='about-title'>لماذا نسمة؟</div>
+        <p class='about-text'>
+            في "نسمة"، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. 
+            نوفر لكِ نخبة من العاملات المختصات والمدربات، لضمان أعلى معايير الترتيب والتعقيم، بخصوصية تامة واحترافية تليق بكِ. 
+            اختاري المختصة المفضلة لديكِ، وحددي موعدك بلمسة زر، ودعي الباقي علينا لتستمتعي براحة البال التي تستحقينها.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# [جديد] د. إضافة قائمة المميزات سريعاً
+st.markdown(f"""
+    <div class='features-section'>
+        <p class='feature-item'><span class='feature-icon'>✨</span>عاملات مختصات (⭐ 4.9)</p>
+        <p class='feature-item'><span class='feature-icon'>🕒</span>حجز سريع وسهل عبر واتساب</p>
+        <p class='feature-item'><span class='feature-icon'>🔒</span>خصوصية تامة وأمان مضمون</p>
+        <p class='feature-item'><span class='feature-icon'>💧</span>جودة وتعقيم بلمسة ذكية</p>
+    </div>
+    <div style='text-align: center; color: #0a3d0d; font-weight: 700; font-size: 1rem; margin-top: 10px;'>نسمة.. منزلك مشرق دائماً.</div>
+    """, unsafe_allow_html=True)
+
+
+# هـ. حاوية نموذج الحجز
 with st.container():
     st.markdown("---") # خط فاصل
     name = st.text_input("👤 الاسم الكامل")
@@ -121,10 +187,9 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True) # مسافة
     
-    # د. معالجة زر الحجز (الذي تم توسيعه وتوسيطه عبر الـ CSS)
+    # و. معالجة زر الحجز
     if st.button("تأكيد الحجز وإرسال عبر واتساب"):
         if name and phone:
-            # تجهيز نص الرسالة
             raw_msg = (
                 f"طلب حجز جديد من تطبيق نسمة 🌬️\n"
                 f"--------------------------\n"
@@ -134,16 +199,12 @@ with st.container():
                 f"📅 الموعد: {date} الساعة {time}\n"
                 f"--------------------------"
             )
-            # ترميز الرسالة لتناسب الروابط
             encoded_msg = urllib.parse.quote(raw_msg)
-            # رابط الواتساب المباشر (تأكد من الرقم)
             whatsapp_link = f"https://wa.me/962777278329?text={encoded_msg}"
-            
-            # فتح الرابط في نافذة جديدة باستخدام JavaScript
             st.components.v1.html(f"<script>window.open('{whatsapp_link}', '_blank');</script>", height=0)
-            st.success("جاري تحويلك إلى واتساب لتأكيد طلبك...")
+            st.success("جاري تحويلك إلى واتساب...")
         else:
-            st.error("يرجى إدخال الاسم ورقم الهاتف للمتابعة.")
+            st.error("يرجى إدخال الاسم ورقم الهاتف.")
 
-# هـ. التذييل (Footer)
+# ز. التذييل (Footer)
 st.markdown("<p style='text-align: center; font-size: 12px; color: #000; margin-top: 50px; font-weight: bold;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
