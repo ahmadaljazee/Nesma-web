@@ -22,7 +22,6 @@ st.markdown(f"""
         border: 1px solid #a5d6a7 !important;
         border-radius: 10px;
     }}
-    /* تنسيق الزر وتوسيط النص داخله */
     .stButton>button {{
         background-color: #8bc34a !important;
         color: #ffffff !important;
@@ -37,11 +36,18 @@ st.markdown(f"""
         text-align: center;
         color: #558b2f;
         font-size: 14px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }}
-    /* محاذاة القوائم المنسدلة لليمين */
-    div[data-baseweb="select"] > div {{
+    /* تنسيق صندوق النبذة الظاهر */
+    .about-box {{
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px dashed #a5d6a7;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
+        text-align: right;
         direction: rtl;
+        line-height: 1.6;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -49,24 +55,18 @@ st.markdown(f"""
 st.markdown("<h1 style='text-align: center; color: #2e7d32;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown('<div class="bio-text">نسمة.. نظافة.. راحة.. بلمسة ذكية.</div>', unsafe_allow_html=True)
 
-# --- قسم نبذة عنا ---
-with st.expander("✨ تعرف على نسمة"):
-    st.markdown("""
-    <div style='text-align: right; line-height: 1.6; direction: rtl;'>
-        <strong>نسمة.. أكثر من مجرد خدمة تنظيف.</strong><br>
-        نحن فريق يسعى لإعادة تعريف الراحة المنزلية. من خلال تطبيقنا، نضع بين يديكِ 
-        نخبة من العاملات المختصات لضمان منزل يفوح بالنظافة والترتيب. 
-        <br><br>
-        <b>لماذا تختارين نسمة؟</b>
-        <ul>
-            <li>دقة في المواعيد.</li>
-            <li>عاملات مدربات وصاحبات خبرة.</li>
-            <li>نظام حجز ذكي وسلس عبر الواتساب.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
+# --- قسم نبذة عنا (ظاهر بشكل دائم) ---
+st.markdown("""
+<div class="about-box">
+    <strong>✨ لماذا تختارين نسمة؟</strong><br>
+    نحن في <b>نسمة</b> نؤمن أن البيت النظيف هو بداية يوم سعيد. 
+    نسعى لإعادة تعريف الراحة المنزلية من خلال نخبة من العاملات المختصات لضمان منزل يفوح بالنظافة والترتيب بلمسة عصرية تضمن لكِ الراحة والخصوصية.
+    <br><br>
+    • <b>دقة في المواعيد</b> واحترافية عالية.<br>
+    • <b>عاملات مدربات</b> وصاحبات خبرة.<br>
+    • <b>نظام حجز ذكي</b> وسلس عبر الواتساب.
+</div>
+""", unsafe_allow_html=True)
 
 # --- نموذج الحجز ---
 with st.container():
@@ -86,7 +86,7 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # --- توسيط زر الحجز باستخدام الأعمدة ---
+    # --- توسيط زر الحجز ---
     col_left, col_center, col_right = st.columns([1, 2, 1])
     
     with col_center:
@@ -94,22 +94,14 @@ with st.container():
         
     if submit_button:
         if name and phone:
-            # تجهيز الرسالة
             raw_message = f"طلب حجز جديد من موقع نسمة\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 العاملة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
             encoded_message = urllib.parse.quote(raw_message)
-            
-            # رابط الواتساب
             admin_phone = "962777278329"
             whatsapp_url = f"https://wa.me/{admin_phone}?text={encoded_message}"
             
-            # تنفيذ الفتح التلقائي
-            js_code = f"""
-            <script>
-                window.location.href = "{whatsapp_url}";
-            </script>
-            """
+            js_code = f"<script>window.location.href = '{whatsapp_url}';</script>"
             st.components.v1.html(js_code, height=0)
-            st.info("جاري التحويل إلى واتساب...")
+            st.info("جاري التحويل إلى واتساب لتأكيد حجزك...")
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال أولاً.")
 
