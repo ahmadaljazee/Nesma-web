@@ -29,7 +29,7 @@ ADMIN_PASSWORD = "123" # كلمة المرور للوحة التحكم
 def index():
     return render_template('index.html')
 
-# --- 2. مسار الحجز (تخزين البيانات فقط) ---
+# --- 2. مسار الحجز (تعديل لاستلام المستلزمات الإضافية) ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -41,6 +41,12 @@ def save_booking():
         lat = request.form.get('lat')
         lon = request.form.get('lon')
 
+        # --- الجزء الجديد: استلام الخيارات الأربعة (Checkboxes) ---
+        # نستخدم getlist لأن الزبون قد يختار أكثر من خيار واحد
+        extras = request.form.getlist('extra')
+        # تحويل القائمة إلى نص واحد مفصول بفواصل لتسهيل القراءة في لوحة التحكم
+        extras_str = ", ".join(extras) if extras else "لا يوجد"
+
         map_link = f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
 
         booking = {
@@ -49,16 +55,16 @@ def save_booking():
             "cleaner": cleaner,
             "date": date,
             "time": time,
+            "extra_supplies": extras_str, # حفظ المستلزمات في قاعدة البيانات
             "location": {"lat": lat, "lon": lon},
             "map_url": map_link,
             "status": "جديد",
             "timestamp": datetime.datetime.now()
         }
 
-        # حفظ البيانات في Firestore
+        # حفظ البيانات في Firestore في مجموعة "bookings"
         db.collection("bookings").add(booking)
         
-        # نرسل رسالة نجاح ونبقى في نفس الصفحة
         return '''
             <script>
                 alert("✅ تم استلام طلب الحجز بنجاح! سنتواصل معك قريباً.");
@@ -78,11 +84,11 @@ def admin_login():
         else:
             return "كلمة مرور خاطئة!"
     return '''
-        <div style="text-align:center; margin-top:100px; font-family:sans-serif;">
+        <div style="text-align:center; margin-top:100px; font-family:sans-serif; direction:rtl;">
             <h2>قفل الأمان - لوحة تحكم نسمة</h2>
             <form method="post">
                 <input type="password" name="password" placeholder="كلمة المرور" style="padding:10px; border-radius:5px;">
-                <button type="submit" style="padding:10px 20px; background:#2e7d32; color:white; border:none; border-radius:5px;">دخول</button>
+                <button type="submit" style="padding:10px 20px; background:#2e7d32; color:white; border:none; border-radius:5px; cursor:pointer;">دخول</button>
             </form>
         </div>
     '''
