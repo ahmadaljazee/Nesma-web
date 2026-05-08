@@ -71,8 +71,6 @@ def book():
     )
     
     encoded_msg = urllib.parse.quote(raw_msg)
-    whatsapp_url = f"https://wa.me/962777278329?text={encoded_msg}"
-    return redirect(whatsapp_url)
 
 # --- لوحة التحكم (الدخول) ---
 @app.route('/admin-login', methods=['GET', 'POST'])
