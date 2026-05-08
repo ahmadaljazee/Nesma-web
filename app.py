@@ -4,43 +4,48 @@ import urllib.parse
 import base64
 import os
 
-# --- إعدادات الصفحة (تعيين الأيقونة) ---
-# تم تعديل الاسم ليكون logo.png بناءً على مجلد GitHub الخاص بك
+# --- إعدادات الصفحة (تعيين الأيقونة والاسم) ---
+# سيبحث التطبيق عن ملف logo.png المرفوع على GitHub لاستخدامه كأيقونة
 st.set_page_config(
     page_title="نسمة | Nesma",
     page_icon="logo.png",
     layout="centered"
 )
 
-# دالة آمنة لتحويل الصورة لترميز CSS (لا تعطل التطبيق)
+# دالة آمنة لتحويل الصورة لترميز CSS (لا تعطل التطبيق في حال غياب الملف)
 def get_base64(bin_file):
+    # التحقق أولاً من وجود الملف في المسار المحدد
     if os.path.exists(bin_file):
         try:
             with open(bin_file, 'rb') as f:
                 data = f.read()
+            # تحويل البيانات لترميز base64 لتضمينها في CSS
             return base64.b64encode(data).decode()
         except Exception:
-            return "" # في حال وجود خطأ في القراءة
-    return "" # إذا لم يكن الملف موجوداً
+            # في حال وجود خطأ غير متوقع، لا نعطل التطبيق
+            return ""
+    # إذا لم يكن الملف موجوداً، نرجع نصاً فارغاً
+    return ""
 
-# محاولة تحويل الصورة لاستخدامها كخلفية (تأكد أن الملف اسمه bg.png)
+# محاولة تحويل الصورة لاستخدامها كخلفية (يجب أن يكون الملف اسمه bg.png)
 bin_str = get_base64('bg.png')
 
-# التحقق من وجود الصورة لعرض تحذير
+# التحقق من وجود الصورة لعرض تحذير أصفر في حال غيابها
 if not bin_str:
-    st.warning("⚠️ لم يتم العثور على ملف 'bg.png' في المجلد الرئيسي. يرجى التأكد من رفعه على GitHub للحصول على الخلفية.")
+    st.warning("⚠️ لم يتم العثور على ملف 'bg.png' في المجلد الرئيسي على GitHub. ستظهر واجهة بيضاء أساسية.")
 
 # --- التنسيق البصري (الكود الأساسي المطور) ---
 st.markdown(f"""
     <style>
     .stApp {{
-        /* تعيين صورة الخلفية مع التدرج اللوني لضمان وضوح النص */
-        background-image: linear-gradient(rgba(253, 252, 240, 0.92), rgba(232, 245, 233, 0.92)), url("data:image/png;base64,{bin_str}");
+        /* إذا وجدت الخلفية، سيتم تفعيلها مع التدرج اللوني لضمان وضوح النص، وإلا سنستخدم لوناً ثابتاً */
+        {f'background-image: linear-gradient(rgba(253, 252, 240, 0.92), rgba(232, 245, 233, 0.92)), url("data:image/png;base64,{bin_str}");' if bin_str else 'background-color: #fdfcf0;'}
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }}
     
+    /* تنسيق حقول الإدخال لتكون بيضاء وواضحة فوق الخلفية */
     .stTextInput>div>div>input, .stSelectbox>div>div>div {{
         background-color: rgba(255, 255, 255, 0.9) !important;
         border: 1px solid #a5d6a7 !important;
@@ -55,8 +60,9 @@ st.markdown(f"""
         color: #2e4d3b !important;
     }}
 
+    /* المربع الثابت حول النبذة */
     .static-about-box {{
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.85);
         border: 1px solid #a5d6a7;
         border-radius: 15px;
         padding: 20px;
@@ -66,6 +72,7 @@ st.markdown(f"""
         margin-bottom: 25px;
     }}
 
+    /* تنسيق زر الحجز الأخضر المميز */
     div.stButton > button {{
         background-color: #00c853 !important;
         color: white !important;
@@ -75,6 +82,7 @@ st.markdown(f"""
         width: 100%;
         border: none !important;
         box-shadow: 0 4px 12px rgba(0,200,83,0.3) !important;
+        font-size: 18px;
     }}
     
     .main-header {{
@@ -87,7 +95,7 @@ st.markdown(f"""
 
 # --- واجهة المستخدم ---
 
-# عرض الشعار موسطاً (تم تعديل الاسم إلى logo.png)
+# عرض الشعار موسطاً في الأعلى (سيبحث عن logo.png المرفوع)
 col1, col2, col3 = st.columns([1, 1.2, 1])
 with col2:
     if os.path.exists("logo.png"):
@@ -112,7 +120,7 @@ with st.container():
     phone = st.text_input("📞 رقم الجوال", placeholder="07XXXXXXXX")
     
     # اختيار العاملة (مثال)
-    cleaner = st.selectbox("🧹 اختر العاملة المختصة:", ["سناء ⭐ 4.9", "أمل ⭐ 4.7", "ريم ⭐ 4.8"])
+    cleaner = st.selectbox("🧹 اختر العاملة المختصة:", ["سناء م. ⭐ 4.9", "أمل ع. ⭐ 4.7", "ريم س. ⭐ 4.8"])
 
     col_date, col_time = st.columns(2)
     with col_date:
@@ -130,10 +138,9 @@ with st.container():
                 # تجهيز رسالة الواتساب
                 raw_msg = f"طلب حجز جديد من نسمة 🌬️\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 المختصة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
                 encoded_msg = urllib.parse.quote(raw_msg)
-                # استبدل الرقم برقم الواتساب الخاص بك (مثلاً: 962777278329)
-                whatsapp_link = f"https://wa.me/962XXXXXXXXX?text={encoded_msg}"
-                
-                # استخدام HTML لفتح الرابط لتجنب فتح نافذة بيضاء
+                # استبدل الرقم برقم الواتساب الخاص بك
+                whatsapp_link = f"https://wa.me/962777278329?text={encoded_msg}"
+                # استخدام HTML لفتح الرابط
                 st.components.v1.html(f"<script>window.location.href = '{whatsapp_link}';</script>", height=0)
             else:
                 st.warning("يرجى إدخال البيانات المطلوبة.")
