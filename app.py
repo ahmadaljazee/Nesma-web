@@ -4,18 +4,23 @@ import urllib.parse
 import base64
 import os
 import json
-import pandas as pd # أضفنا pandas لعرض الجداول باحترافية
+import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# --- 1. إعدادات الصفحة ---
-st.set_page_config(page_title="نسمة | Nesma", page_icon="logo.png", layout="centered")
+# --- 1. إعدادات الصفحة والأيقونة ---
+st.set_page_config(
+    page_title="نسمة | Nesma",
+    page_icon="logo.png", 
+    layout="centered"
+)
 
-# --- 2. إعداد الاتصال بـ Firebase (النسخة المعتمدة لـ default1) ---
+# --- 2. إعداد الاتصال بـ Firebase (قاعدة بيانات default1) ---
 @st.cache_resource
 def init_firebase():
     if not firebase_admin._apps:
         try:
+            # جلب المفاتيح من Environment Variables في رندر
             firebase_key = os.environ.get("FIREBASE_KEYS")
             if not firebase_key and "FIREBASE_KEYS" in st.secrets:
                 firebase_key = st.secrets["FIREBASE_KEYS"]
@@ -31,24 +36,22 @@ def init_firebase():
     return firebase_admin.get_app()
 
 firebase_app = init_firebase()
-
-# تعريف قاعدة البيانات default1 بشكل صحيح
 db = None
 if firebase_app:
     try:
+        # الربط المباشر بقاعدة البيانات default1
         db = firestore.client(database_id="default1")
     except Exception as e:
         st.error(f"❌ خطأ في الوصول للقاعدة default1: {e}")
 
 # --- 3. نظام حماية لوحة التحكم ---
 def check_password():
-    """إرجاع True إذا كانت كلمة المرور صحيحة"""
     if "password_correct" not in st.session_state:
         st.session_state["password_correct"] = False
     
     if not st.session_state["password_correct"]:
         st.sidebar.subheader("🔐 دخول الإدارة")
-        # يمكنك تغيير كلمة السر هنا (Nesma2026)
+        # كلمة السر الافتراضية Nesma2026
         pwd = st.sidebar.text_input("أدخل كلمة المرور", type="password")
         if st.sidebar.button("دخول"):
             if pwd == "Nesma2026":
@@ -59,13 +62,14 @@ def check_password():
         return False
     return True
 
-# --- 4. التنسيق البصري (CSS) ---
+# --- 4. التنسيق البصري الاحترافي (CSS) ---
 def get_base64_of_bin_file(bin_file):
     if os.path.exists(bin_file):
         with open(bin_file, 'rb') as f: return base64.b64encode(f.read()).decode()
     return ""
 
 bg_base64 = get_base64_of_bin_file('bg.png')
+
 st.markdown(f"""
     <style>
     header {{visibility: hidden !important;}}
@@ -74,62 +78,102 @@ st.markdown(f"""
                           url("data:image/png;base64,{bg_base64}");
         background-size: cover; background-position: center; background-attachment: fixed;
     }}
-    label, p, span, h1, h2, h3 {{ color: #0a3d0d !important; font-weight: 800 !important; }}
+    
+    label, p, span, h1, h2, h3 {{ color: #0a3d0d !important; font-weight: 800 !important; text-shadow: 1px 1px 3px rgba(255,255,255,0.7); }}
+
+    .stTextInput>div>div>input, .stSelectbox>div>div>div, .stDateInput>div>div>input {{
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        border: 2px solid #2e7d32 !important; border-radius: 12px !important;
+        color: black !important; font-weight: 600 !important;
+    }}
+
     div.stButton > button {{
         background-color: #00c853 !important; color: white !important;
         border-radius: 30px !important; font-weight: bold; height: 55px; width: 100%;
+        border: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 20px !important;
     }}
-    .about-section {{ background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 20px; text-align: right; direction: rtl; }}
+    
+    .about-section {{
+        background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 20px;
+        border: 1px solid #a5d6a7; margin-bottom: 25px; text-align: right; direction: rtl;
+    }}
+    .about-title {{ color: #1b5e20; font-size: 1.5rem; border-bottom: 2px solid #00c853; display: inline-block; padding-bottom: 5px; }}
+    .features-section {{ text-align: right; direction: rtl; margin: 15px 0; }}
+    .feature-item {{ font-size: 1.1rem; color: #0a3d0d; font-weight: 700 !important; }}
+    .feature-icon {{ color: #00c853; margin-left: 10px; font-size: 1.2rem; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 5. منطق التنقل بين الواجهة والداشبورد ---
-st.sidebar.title("🌬️ نسمة - Nesma")
+# --- 5. منطق التنقل (Sidebar) ---
+if os.path.exists("logo.png"):
+    st.sidebar.image("logo.png", width=150)
+
 page = st.sidebar.radio("انتقل إلى:", ["واجهة الحجز", "لوحة التحكم 📊"])
 
 if page == "لوحة التحكم 📊":
     if check_password():
-        st.markdown("<h2 style='text-align: center;'>📊 لوحة إدارة الحجوزات</h2>", unsafe_allow_html=True)
-        
-        if db:
-            try:
-                # جلب البيانات من Firestore
-                docs = db.collection("bookings").order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
-                data = [doc.to_dict() for doc in docs]
+        st.markdown("<h2 style='text-align: center;'>📊 إدارة عمليات نسمة</h2>", unsafe_allow_html=True)
+        try:
+            docs = db.collection("bookings").order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
+            data = []
+            for doc in docs:
+                d = doc.to_dict()
+                d['id'] = doc.id
+                data.append(d)
+            
+            if data:
+                df = pd.DataFrame(data)
+                st.metric("إجمالي الطلبات", len(df))
+                st.dataframe(df[['name', 'phone', 'cleaner', 'date', 'time', 'status']], use_container_width=True)
                 
-                if data:
-                    df = pd.DataFrame(data)
-                    
-                    # إحصائيات سريعة
-                    st.columns(3)[0].metric("إجمالي الحجوزات", len(df))
-                    
-                    # تنسيق الجدول للعرض
-                    st.write("### قائمة الحجوزات الأخيرة:")
-                    st.dataframe(df[['name', 'phone', 'cleaner', 'date', 'time', 'status']], use_container_width=True)
-                    
-                    # خيار تحميل البيانات كملف CSV
-                    csv = df.to_csv(index=False).encode('utf-8-sig')
-                    st.download_button("📥 تحميل سجل الحجوزات CSV", csv, "bookings.csv", "text/csv")
-                else:
-                    st.info("لا توجد حجوزات مسجلة حتى الآن.")
-            except Exception as e:
-                st.error(f"خطأ في جلب البيانات: {e}")
-    
-    # زر خروج من الإدارة
-    if st.session_state.get("password_correct"):
+                # تحديث الحالة
+                with st.expander("📝 تحديث حالة الطلب"):
+                    selected_id = st.selectbox("اختر طلب الزبون:", options=df['id'], format_func=lambda x: df[df['id']==x]['name'].values[0])
+                    new_status = st.selectbox("تغيير الحالة إلى:", ["جديد", "تم التواصل", "تم التنفيذ", "ملغي"])
+                    if st.button("تحديث"):
+                        db.collection("bookings").document(selected_id).update({"status": new_status})
+                        st.success("تم التحديث!")
+                        st.rerun()
+            else:
+                st.info("لا توجد بيانات حالياً.")
+        except Exception as e:
+            st.error(f"خطأ: {e}")
+        
         if st.sidebar.button("تسجيل خروج"):
             st.session_state["password_correct"] = False
             st.rerun()
 
 else:
-    # --- واجهة الزبائن الأصلية ---
+    # --- واجهة الزبائن الأصلية (مع البيو والمميزات) ---
     if os.path.exists("logo.png"):
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2: st.image("logo.png", use_container_width=True)
 
     st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
-    st.markdown("<div class='about-section'><p>في 'نسمة' نؤمن أن نظافة منزلك هي نسمة هدوء ليومك.</p></div>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 1.3rem; margin-bottom: 25px;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
 
+    # النبذة التعريفية
+    st.markdown(f"""
+        <div class='about-section'>
+            <div class='about-title'>لماذا نسمة؟</div>
+            <p class='about-text'>
+                في "نسمة"، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. 
+                نوفر لكِ نخبة من العاملات المختصات والمدربات، لضمان أعلى معايير الترتيب والتعقيم، بخصوصية تامة واحترافية تليق بكِ. 
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # قائمة المميزات
+    st.markdown(f"""
+        <div class='features-section'>
+            <p class='feature-item'><span class='feature-icon'>✨</span>عاملات مختصات (⭐ 4.9)</p>
+            <p class='feature-item'><span class='feature-icon'>🕒</span>حجز سريع وسهل عبر واتساب</p>
+            <p class='feature-item'><span class='feature-icon'>🔒</span>خصوصية تامة وأمان مضمون</p>
+            <p class='feature-item'><span class='feature-icon'>💧</span>جودة وتعقيم بلمسة ذكية</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # نموذج الحجز
     with st.container():
         st.markdown("---")
         name = st.text_input("👤 الاسم الكامل")
@@ -149,14 +193,13 @@ else:
                             "date": str(date), "time": str(time),
                             "timestamp": datetime.datetime.now(), "status": "جديد"
                         })
-
-                    msg = f"حجز جديد من نسمة 🌬️\nالاسم: {name}\nالهاتف: {phone}\nالموعد: {date} {time}"
+                    msg = f"حجز جديد من نسمة 🌬️\nالاسم: {name}\nالهاتف: {phone}\nالعاملة: {cleaner}\nالموعد: {date} {time}"
                     wa_url = f"https://wa.me/962777278329?text={urllib.parse.quote(msg)}"
                     st.components.v1.html(f"<script>window.open('{wa_url}', '_blank');</script>", height=0)
-                    st.success("تم تسجيل حجزك في النظام وفتح الواتساب!")
+                    st.success("تم الحجز بنجاح!")
                 except Exception as e:
-                    st.error(f"حدث خطأ: {e}")
+                    st.error(f"خطأ: {e}")
             else:
                 st.error("يرجى إدخال الاسم ورقم الهاتف.")
 
-st.markdown("<p style='text-align: center; font-weight: bold; margin-top: 50px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 12px; color: #000; margin-top: 50px; font-weight: bold;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
