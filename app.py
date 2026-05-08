@@ -2,10 +2,10 @@ import streamlit as st
 import datetime
 import urllib.parse
 
-# --- إعدادات الصفحة ---
+# --- إعدادات الصفحة (تم تحديث الأيقونة هنا) ---
 st.set_page_config(
     page_title="نسمة | Nesma",
-    page_icon="🍃",
+    page_icon="nesma.png",  # تم تعيين شعارك كأيقونة للمتصفح
     layout="centered"
 )
 
@@ -37,7 +37,7 @@ st.markdown("""
     }
 
     div.stButton > button {
-        background-color: #00c853 !important; /* لون أخضر مستوحى من شعارك */
+        background-color: #00c853 !important;
         color: white !important;
         border-radius: 25px !important;
         font-weight: bold;
@@ -64,10 +64,9 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- عرض الشعار موسطاً ---
-# ملاحظة: تأكد من تسمية ملف الصورة logo.png ووضعه في نفس مجلد الكود
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    st.image("logo.png", use_container_width=True)
+    st.image("nesma.png", use_container_width=True)
 
 st.markdown("<h1 class='main-header'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown("<p class='tagline'>نظافة.. راحة.. بلمسة ذكية</p>", unsafe_allow_html=True)
