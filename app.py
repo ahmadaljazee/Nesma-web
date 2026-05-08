@@ -10,48 +10,60 @@ from firebase_admin import credentials, firestore
 # --- 1. إعدادات الصفحة ---
 st.set_page_config(page_title="نسمة | Nesma", page_icon="logo.png", layout="centered")
 
-# --- 2. إعداد Firebase (تعديل حيوي لحل المشكلة) ---
-# هذه الدالة تضمن أن التطبيق لا يحاول الاتصال إلا إذا كان المفتاح موجوداً فعلاً
+# --- 2. إعداد Firebase (الحل المعدل لـ Render) ---
 @st.cache_resource
 def init_firebase():
     if not firebase_admin._apps:
         try:
-            # محاولة القراءة من Secrets (في رندر)
-            if "FIREBASE_KEYS" in st.secrets:
-                key_dict = json.loads(st.secrets["FIREBASE_KEYS"])
-            else:
-                # إذا كنت تجرب محلياً وتملك الملف
-                with open("serviceAccountKey.json") as f:
-                    key_dict = json.load(f)
+            # أولاً: محاولة القراءة من Environment Variables (رندر)
+            firebase_key = os.environ.get("FIREBASE_KEYS")
             
-            creds = credentials.Certificate(key_dict)
-            return firebase_admin.initialize_app(creds)
+            # ثانياً: إذا لم يجدها، يجرب البحث في st.secrets (المحلي)
+            if not firebase_key and "FIREBASE_KEYS" in st.secrets:
+                firebase_key = st.secrets["FIREBASE_KEYS"]
+
+            if firebase_key:
+                key_dict = json.loads(firebase_key)
+                creds = credentials.Certificate(key_dict)
+                return firebase_admin.initialize_app(creds)
+            else:
+                st.error("لم يتم العثور على مفتاح FIREBASE_KEYS. تأكد من إضافته في Render Environment Variables.")
+                return None
         except Exception as e:
-            st.error(f"خطأ في إعدادات المفاتيح: {e}")
+            st.error(f"خطأ في معالجة المفاتيح: {e}")
             return None
     return firebase_admin.get_app()
 
-# استدعاء الدالة
+# استدعاء دالة الاتصال
 app = init_firebase()
 
-# تأكد من أن الاتصال تم قبل تعريف db
+# التحقق من نجاح الاتصال قبل تعريف db
 if app:
     db = firestore.client()
 else:
-    st.error("قاعدة البيانات غير متصلة. يرجى التحقق من Environment Variables في Render.")
-    st.stop() # إيقاف التطبيق هنا لكي لا يظهر الخطأ الأحمر المزعج
+    st.warning("⚠️ التطبيق يعمل بدون قاعدة بيانات حالياً. تأكد من إعدادات المفاتيح.")
+    st.stop() # إيقاف التنفيذ لتجنب الخطأ الأحمر الكبير
 
 # --- 3. التنسيق البصري (CSS) ---
-# (ضع هنا كود الـ CSS الجميل الذي صممناه سابقاً)
 def get_base64_of_bin_file(bin_file):
     if os.path.exists(bin_file):
         with open(bin_file, 'rb') as f: return base64.b64encode(f.read()).decode()
     return ""
 
 bg_base64 = get_base64_of_bin_file('bg.png')
-st.markdown(f"<style>.stApp {{ background-image: url('data:image/png;base64,{bg_base64}'); background-size: cover; }} </style>", unsafe_allow_html=True)
+st.markdown(f"""
+    <style>
+    header {{visibility: hidden !important;}}
+    .stApp {{
+        background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
+                          url("data:image/png;base64,{bg_base64}");
+        background-size: cover; background-position: center; background-attachment: fixed;
+    }}
+    /* ... باقي تنسيقات الـ CSS الجميلة التي أضفتها ... */
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- 4. واجهة المستخدم ---
+# --- 4. واجهة المستخدم (تكملة الكود السابق) ---
 st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 
 with st.container():
@@ -66,19 +78,20 @@ with st.container():
     if st.button("تأكيد الحجز وإرسال عبر واتساب"):
         if name and phone:
             try:
-                # حفظ في Firestore
+                # الحفظ في Firestore
                 db.collection("bookings").add({
                     "name": name, "phone": phone, "cleaner": cleaner,
                     "date": str(date), "time": str(time),
                     "timestamp": datetime.datetime.now(), "status": "جديد"
                 })
                 
-                # رسالة واتساب
+                # إرسال الواتساب
                 msg = f"حجز جديد: {name} - {cleaner} - {date}"
-                wa_url = f"https://wa.me/962777278329?text={urllib.parse.quote(msg)}"
+                encoded_msg = urllib.parse.quote(msg)
+                wa_url = f"https://wa.me/962777278329?text={encoded_msg}"
                 st.components.v1.html(f"<script>window.open('{wa_url}', '_blank');</script>", height=0)
                 st.success("تم الحجز بنجاح!")
             except Exception as e:
-                st.error(f"فشل الحفظ: {e}")
+                st.error(f"فشل الحفظ في قاعدة البيانات: {e}")
 
-st.markdown("<p style='text-align: center;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-weight: bold;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
