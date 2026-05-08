@@ -4,116 +4,111 @@ import urllib.parse
 import base64
 import os
 
-# --- 1. إعدادات الصفحة (Amman, Jordan Context) ---
+# --- إعدادات الصفحة (تم تعيين أيقونة مؤقتة) ---
 st.set_page_config(
-    page_title="نسمة للأعمال المنزلية | Nesma Home Services",
-    page_icon="🌬️", # Breeze/Cleanliness icon
+    page_title="نسمة | Nesma",
+    page_icon="🌬️", # إيموجي يرمز للنظافة والراحة
     layout="centered"
 )
 
-# --- 2. دالة مساعدة للتعامل مع الصور بأمان (تمنع تعطل التطبيق) ---
-def get_base64_of_bin_file(bin_file):
-    """تحاول تحويل الصورة إلى Base64. تعود بـ None إذا لم يتم العثور على الملف أو حدث خطأ."""
-    if not os.path.exists(bin_file):
-        return None
-    try:
-        with open(bin_file, 'rb') as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except Exception:
-        # فشل بصمت لتجنب توقف التطبيق
-        return None
+# دالة آمنة لتحويل الصورة لترميز CSS (لا تعطل التطبيق في حال غياب الملف)
+def get_base64(bin_file):
+    # التحقق أولاً من وجود الملف في المسار المحدد
+    if os.path.exists(bin_file):
+        try:
+            with open(bin_file, 'rb') as f:
+                data = f.read()
+            # تحويل البيانات لترميز base64 لتضمينها في CSS
+            return base64.b64encode(data).decode()
+        except Exception as e:
+            # في حال وجود خطأ غير متوقع، لا نعطل التطبيق
+            return ""
+    # إذا لم يكن الملف موجوداً، نرجع نصاً فارغاً
+    return ""
 
-# محاولة تحميل صورة الشعار nesma.png
-image_base64 = get_base64_of_bin_file('nesma.png')
+# محاولة تحويل الصورة لاستخدامها كخلفية (يجب أن يكون الملف اسمه nesma.png)
+bin_str = get_base64('nesma.png')
 
-# --- 3. تصميم الواجهة (CSS Styling) مع معالجة غياب الصورة ---
-# إذا وجدت الصورة، نضع تراكب خفيف فوقها. إذا لم توجد، نستخدم التدرج اللوني الهادئ الذي اقترحته.
-if image_base64:
-    # تنسيق خلفية تحتوي على الصورة المرفوعة مع تراكب أبيض شبه شفاف للوضوح
-    bg_style = f"""
-        background-image: linear-gradient(rgba(253, 252, 240, 0.92), rgba(232, 245, 233, 0.92)), 
-                          url("data:image/png;base64,{image_base64}");
-    """
-else:
-    # التنسيق الاحتياطي: تدرج لوني هادئ ومريح يرمز للنظافة
-    bg_style = """
-        background-image: linear-gradient(135deg, #fdfcf0 0%, #e8f5e9 100%);
-    """
+# التحقق من وجود الصورة لعرض تحذير أصفر في حال غيابها
+if not bin_str:
+    st.warning("⚠️ لم يتم العثور على ملف 'nesma.png' في المجلد الرئيسي على GitHub. ستظهر واجهة بسيطة وواضحة.")
 
+# --- التنسيق البصري (الكود الأساسي المطور) ---
+# قمنا بجعل الخلفية تتكيف مع وجود الصورة أو غيابها
 st.markdown(f"""
     <style>
     .stApp {{
-        {bg_style}
+        /* إذا وجدت الخلفية، سيتم تفعيلها مع التدرج اللوني، وإلا سنستخدم تدرجاً لونياً هادئاً كبديل */
+        {f'background-image: linear-gradient(rgba(253, 252, 240, 0.92), rgba(232, 245, 233, 0.92)), url("data:image/png;base64,{bin_str}");' if bin_str else 'background-image: linear-gradient(135deg, #fdfcf0 0%, #e8f5e9 100%);'}
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
     }}
-
-    /* تحسين مظهر حقول الإدخال */
-    .stTextInput > div > div > input,
-    .stSelectbox > div > div > div {{
-        background-color: rgba(255, 255, 255, 0.8) !important;
+    
+    /* تنسيق حقول الإدخال لتكون واضحة */
+    .stTextInput>div>div>input, .stSelectbox>div>div>div {{
+        background-color: rgba(255, 255, 255, 0.9) !important;
         border: 1px solid #a5d6a7 !important;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
+        color: #2e4d3b !important;
     }}
 
-    /* تصميم زر الحجز (لون نسمة الأخضر المريح) */
+    .static-about-box {{
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid #a5d6a7;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: right;
+        direction: rtl;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }}
+
+    /* تنسيق زر الحجز */
     div.stButton > button {{
         background-color: #00c853 !important;
         color: white !important;
-        border-radius: 25px !important;
+        border-radius: 30px !important;
         font-weight: bold;
-        font-size: 1.1rem;
-        height: 50px;
+        height: 55px;
         width: 100%;
         border: none !important;
-        box-shadow: 0 4px 10px rgba(0,200,83,0.3) !important;
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,200,83,0.3) !important;
     }}
-    div.stButton > button:hover {{
-        background-color: #00e676 !important;
-        box-shadow: 0 6px 15px rgba(0,200,83,0.4) !important;
-    }}
-
-    /* تنسيق النصوص الرئيسية */
-    .header-text {{
+    
+    .main-header {{
         text-align: center;
         color: #1b5e20;
         font-weight: bold;
     }}
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# --- 4. محتوى الواجهة (UI Content) ---
+# --- واجهة المستخدم ---
 
-# عرض الشعار (فقط إذا نجح تحميله)
-if image_base64:
-    # توسيط الصورة باستخدام أعمدة
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
+# عرض الشعار موسطاً في الأعلى إذا تم العثور عليه
+col1, col2, col3 = st.columns([1, 1.2, 1])
+with col2:
+    if bin_str:
         st.image("nesma.png", use_container_width=True)
 
-# العنوان الرئيسي والشعار اللفظي
-st.markdown("<h1 class='header-text'>نسمة للأعمال المنزلية | Nesma</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #558b2f; font-weight: 500;'>خدمات منزلية احترافية في عمان بلمسة ذكية</p>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-header'>نسمة | Nesma</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #558b2f; font-weight: 500;'>نظافة.. راحة.. بلمسة ذكية</p>", unsafe_allow_html=True)
 
-# حاوية نموذج الحجز
+# النبذة الثابتة
+st.markdown("""
+<div class="static-about-box">
+    <strong>✨ لماذا نسمة؟</strong><br>
+    في <b>نسمة</b>، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. نوفر لكِ نخبة من العاملات المختصات لضمان أعلى معايير الترتيب والتعقيم بخصوصية تامة.
+</div>
+""", unsafe_allow_html=True)
+
+# نموذج الحجز
 with st.container():
-    st.markdown("<h3 style='text-align: center; color: #1b5e20;'>نموذج حجز خدمة</h3>", unsafe_allow_html=True)
-    
-    # حقول الإدخال
-    name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك")
-    phone = st.text_input("📞 رقم الجوال (في عمان)", placeholder="07XXXXXXXX")
-    
-    # اختيار العاملة (مثال لنوع الخدمة)
-    cleaner = st.selectbox("🧹 اختر العاملة المختصة:", [
-        "سناء م. ⭐ 4.9", 
-        "أمل ع. ⭐ 4.7", 
-        "ريم س. ⭐ 4.8"
-    ])
+    name = st.text_input("👤 الاسم الكامل", placeholder="أدخل اسمك الكريم")
+    phone = st.text_input("📞 رقم الجوال", placeholder="07XXXXXXXX")
+    cleaner = st.selectbox("🧹 اختر العاملة المختصة:", ["سناء م. ⭐ 4.9", "أمل ع. ⭐ 4.7", "ريم س. ⭐ 4.8"])
 
-    # أعمدة التاريخ والوقت
     col_date, col_time = st.columns(2)
     with col_date:
         date = st.date_input("📅 تاريخ الحجز", min_value=datetime.date.today())
@@ -122,28 +117,17 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # زر إرسال الطلب عبر الواتساب (موسط)
-    left_col, center_col, right_col = st.columns([1, 1.5, 1])
-    with center_col:
+    # توسيط الزر
+    left, center, right = st.columns([1, 2, 1])
+    with center:
         if st.button("تأكيد البيانات وإرسال الحجز"):
-            # تحقق بسيط من البيانات
-            if not name or not phone:
-                st.warning("يرجى إدخال الاسم ورقم الجوال لتأكيد الحجز.")
+            if name and phone:
+                raw_msg = f"طلب حجز جديد من نسمة 🌬️\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 المختصة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
+                encoded_msg = urllib.parse.quote(raw_msg)
+                # استبدل الرقم برقم الواتساب الخاص بك
+                whatsapp_link = f"https://wa.me/962777278329?text={encoded_msg}"
+                st.components.v1.html(f"<script>window.location.href = '{whatsapp_link}';</script>", height=0)
             else:
-                # تجهيز نص رسالة الواتساب
-                message_text = f"طلب حجز جديد من نسمة 🌬️\n---------------\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 المختصة: {cleaner}\n📅 الموعد: {date} الساعة {time}\n---------------\nالرجاء التواصل لتأكيد الحجز."
-                
-                # ترميز الرسالة لتناسب الرابط
-                encoded_message = urllib.parse.quote(message_text)
-                
-                # إنشاء رابط الواتساب (باستخدام رقم أردني في عمان كمثال)
-                whatsapp_number = "962777278329" 
-                whatsapp_url = f"https://wa.me/{whatsapp_number}?text={encoded_message}"
-                
-                # توجيه المستخدم (بسبب قيود Render/Streamlit في فتح الروابط مباشرة)
-                st.success("تم تجهيز طلبك! يرجى الضغط على الزر أدناه لفتحه في الواتساب وإرسال الرسالة:")
-                st.markdown(f'<a href="{whatsapp_url}" target="_blank" style="text-decoration:none;"><div style="background-color:#25D366; color:white; padding:15px; border-radius:10px; text-align:center; font-weight:bold;">الذهاب إلى الواتساب وإرسال الرسالة</div></a>', unsafe_allow_html=True)
-                st.info("⚠️ ملاحظة: ستحتاج إلى الضغط على 'إرسال' داخل تطبيق الواتساب.")
+                st.warning("يرجى إدخال البيانات المطلوبة.")
 
-# تذييل الصفحة (Footer) مع سياق محلي
-st.markdown("<br><br><p style='text-align: center; font-size: 11px; color: #888;'>نسمة للخدمات المنزلية - عمان، الأردن © 2026</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 11px; color: #999; margin-top: 60px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
