@@ -85,7 +85,7 @@ with st.container():
             
             # تجهيز رابط الواتساب (تأكد من وضع رقمك الصحيح مكان الـ X)
             message = f"طلب حجز جديد من موقع نسمة\nالاسم: {name}\nالجوال: {phone}\nالعاملة: {cleaner}\nالموعد: {date} الساعة {time}"
-            admin_phone = "00962777278329" 
+            admin_phone = "962777278329" 
             whatsapp_url = f"https://wa.me/{admin_phone}?text={message.replace(' ', '%20')}"
             
             # التوجيه للواتساب بعد ثانيتين
