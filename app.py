@@ -36,7 +36,8 @@ def init_firebase():
 
 firebase_app = init_firebase()
 if firebase_app:
-    db = firestore.client()
+    # تم التعديل هنا لربط قاعدة البيانات default1 حصراً
+    db = firestore.client(database="default1")
 else:
     st.warning("⚠️ التطبيق يعمل بدون حفظ في قاعدة البيانات حالياً.")
 
