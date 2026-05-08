@@ -23,10 +23,10 @@ def get_base64_of_bin_file(bin_file):
             return "" # في حال حدث خطأ لا يتوقف التطبيق
     return ""
 
-# محاولة تحميل خلفية bg.png وصفحة اللوجو
+# محاولة تحميل خلفية bg.png وصورة اللوجو للاستخدام في النبذة
 bg_base64 = get_base64_of_bin_file('bg.png')
 
-# --- 2. التنسيق البصري الاحترافي (CSS) - تم إضافة تنسيقات النبذة والمميزات ---
+# --- 2. التنسيق البصري الاحترافي (CSS) - تم إضافة تنسيقات جديدة للنبذة والمميزات ---
 st.markdown(f"""
     <style>
     /* أ. إخفاء شريط Streamlit العلوي والقائمة الجانبية تماماً */
@@ -91,7 +91,7 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.7); /* خلفية بيضاء شفافة */
         border-radius: 15px;
         padding: 20px;
-        border: 1px solid #a5d6a7; /* حدود خضراء فاتحة */
+        border: 1px solid #a5d6a7; /* حدود خضراء فاتحة جداً */
         margin-bottom: 25px;
         text-align: right;
         direction: rtl; /* اتجاه النص من اليمين لليسار */
@@ -100,7 +100,7 @@ st.markdown(f"""
         color: #1b5e20;
         font-size: 1.5rem;
         margin-bottom: 10px;
-        border-bottom: 2px solid #00c853;
+        border-bottom: 2px solid #00c853; /* خط تحت العنوان */
         display: inline-block;
         padding-bottom: 5px;
     }}
@@ -124,7 +124,7 @@ st.markdown(f"""
         font-weight: 700 !important;
     }}
     .feature-icon {{
-        color: #00c853; /* لون الإيقونة */
+        color: #00c853; /* لون الإيقونة (أخضر نسمة) */
         margin-left: 10px;
         font-size: 1.2rem;
     }}
@@ -139,7 +139,7 @@ if os.path.exists("logo.png"):
     with col2:
         st.image("logo.png", use_container_width=True)
 
-# ب. العناوين والنصوص الثابتة (الـ Bio)
+# ب. العناوين والنصوص الثابتة (الـ Bio المقترح)
 st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-size: 1.3rem; margin-bottom: 25px;'>رعــــاية..جـــودة..أمـــان</p>", unsafe_allow_html=True)
 
