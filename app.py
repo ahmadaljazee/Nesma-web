@@ -36,20 +36,18 @@ def init_firebase():
 
 firebase_app = init_firebase()
 
-# --- تم إصلاح هذا الجزء ليعمل بشكل صحيح ---
+# --- إصلاح الخطأ البرمجي هنا (database_id) ---
+db = None
 if firebase_app:
     try:
-        # ربط قاعدة البيانات default1 حصراً باستخدام database_id
+        # التعديل الصحيح: استخدام database_id لربط default1
         db = firestore.client(database_id="default1")
     except Exception as e:
         st.error(f"❌ لم يتم العثور على القاعدة default1: {e}")
-        st.stop()
 else:
     st.warning("⚠️ التطبيق يعمل بدون حفظ في قاعدة البيانات حالياً.")
-    # لا نضع st.stop هنا لكي تظهر الواجهة للزبون حتى لو تعطلت القاعدة
-# ------------------------------------------
 
-# --- 3. التنسيق البصري الاحترافي ---
+# --- 3. التنسيق البصري الاحترافي (CSS) ---
 def get_base64_of_bin_file(bin_file):
     if os.path.exists(bin_file):
         try:
@@ -151,7 +149,7 @@ with st.container():
         if name and phone:
             try:
                 # أ- حفظ في Firestore
-                if firebase_app:
+                if db:
                     db.collection("bookings").add({
                         "name": name, "phone": phone, "cleaner": cleaner,
                         "date": str(date), "time": str(time),
@@ -174,7 +172,7 @@ with st.container():
                 st.components.v1.html(f"<script>window.open('{whatsapp_link}', '_blank');</script>", height=0)
                 st.success("تم الحجز بنجاح! جاري تحويلك لواتساب...")
             except Exception as e:
-                st.error(f"حدث خطأ: {e}")
+                st.error(f"حدث خطأ أثناء الحفظ: {e}")
         else:
             st.error("يرجى إدخال الاسم ورقم الهاتف.")
 
