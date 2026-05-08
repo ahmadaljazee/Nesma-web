@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نسمة | Nesma</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('/static/bg.png');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, sans-serif; color: #0a3d0d;
+        }
+        .container { max-width: 450px; margin: auto; padding: 20px; text-align: center; }
+        .logo { width: 140px; margin: 20px 0; }
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; border: 1px solid #a5d6a7; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { margin: 10px 0; font-size: 24px; }
+        .about-box { background: #e8f5e9; padding: 15px; border-radius: 12px; font-size: 14px; line-height: 1.6; margin-bottom: 20px; text-align: justify; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #2e7d32; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .gps-btn { background: #ffffff; border: 1px dashed #2e7d32; padding: 10px; border-radius: 10px; cursor: pointer; color: #2e7d32; font-weight: bold; margin: 10px 0; }
+        .submit-btn { background: #00c853; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; font-size: 12px; font-weight: bold; }
+        .feat-item { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 20px; border: 1px solid #a5d6a7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/logo.png" class="logo" onerror="this.style.display='none'">
+        <div class="card">
+            <h1>نسمة | Nesma</h1>
+            <p style="font-weight: bold;">رعــــاية..جـــودة..أمـــان</p>
+            
+            <div class="about-box">
+                في "نسمة"، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. نوفر لكِ نخبة من العاملات المختصات بخصوصية تامة واحترافية تليق بكِ.
+            </div>
+
+            <form action="/book" method="POST">
+                <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
+                <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
+                <select name="cleaner">
+                    <option>سناء م. ⭐ 4.9</option>
+                    <option>أمل ع. ⭐ 4.7</option>
+                    <option>ريم س. ⭐ 4.8</option>
+                </select>
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" name="date" required>
+                    <input type="time" name="time" required>
+                </div>
+
+                <input type="hidden" name="lat" id="lat">
+                <input type="hidden" name="lon" id="lon">
+                
+                <div class="gps-btn" onclick="getLocation()" id="gpsLabel">📍 اضغط لتحديد موقعك تلقائياً</div>
+
+                <button type="submit" class="submit-btn">تأكيد الحجز (واتساب)</button>
+            </form>
+
+            <div class="features">
+                <span class="feat-item">✨ عاملات مختصات</span>
+                <span class="feat-item">🕒 حجز سريع</span>
+                <span class="feat-item">🔒 خصوصية تامة</span>
+            </div>
+        </div>
+        <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
+    </div>
+
+    <script>
+        function getLocation() {
+            const btn = document.getElementById("gpsLabel");
+            if (navigator.geolocation) {
+                btn.innerText = "⏳ جاري تحديد الموقع...";
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    document.getElementById("lat").value = pos.coords.latitude;
+                    document.getElementById("lon").value = pos.coords.longitude;
+                    btn.innerText = "✅ تم تحديد موقعك بنجاح";
+                    btn.style.background = "#e8f5e9";
+                }, () => {
+                    btn.innerText = "❌ يرجى تفعيل الـ GPS";
+                });
+            }
+        }
+    </script>
+</body>
+</html>
