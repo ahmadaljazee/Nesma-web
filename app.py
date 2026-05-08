@@ -5,20 +5,18 @@ import urllib.parse
 # --- إعدادات الصفحة ---
 st.set_page_config(
     page_title="نسمة | Nesma",
-    page_icon="🌬️",
+    page_icon="🍃",
     layout="centered"
 )
 
-# --- التنسيق البصري (الهوية البصرية لنسمة 2026) ---
+# --- التنسيق البصري (الهوية البصرية لنسمة) ---
 st.markdown("""
     <style>
-    /* خلفية متدرجة منعشة تليق بروح نسمة */
     .stApp {
         background: linear-gradient(135deg, #fdfcf0 0%, #e8f5e9 100%) !important;
         color: #2e4d3b !important;
     }
     
-    /* تنسيق حقول الإدخال */
     .stTextInput>div>div>input, .stSelectbox>div>div>div {
         background-color: #ffffff !important;
         color: #2e4d3b !important;
@@ -26,7 +24,6 @@ st.markdown("""
         border-radius: 10px !important;
     }
 
-    /* صندوق النبذة الظاهر دائماً */
     .static-about-box {
         background-color: rgba(255, 255, 255, 0.6);
         border: 1px solid #a5d6a7;
@@ -39,9 +36,8 @@ st.markdown("""
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    /* تنسيق زر الحجز الأخضر */
     div.stButton > button {
-        background-color: #8bc34a !important;
+        background-color: #00c853 !important; /* لون أخضر مستوحى من شعارك */
         color: white !important;
         border-radius: 25px !important;
         font-weight: bold;
@@ -51,15 +47,11 @@ st.markdown("""
         box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
     }
     
-    div.stButton > button:hover {
-        background-color: #7cb342 !important;
-        transform: translateY(-2px);
-    }
-
     .main-header {
         text-align: center;
         color: #2e7d32;
         font-weight: bold;
+        margin-top: -20px;
     }
     
     .tagline {
@@ -71,11 +63,16 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- واجهة المستخدم ---
+# --- عرض الشعار موسطاً ---
+# ملاحظة: تأكد من تسمية ملف الصورة logo.png ووضعه في نفس مجلد الكود
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    st.image("logo.png", use_container_width=True)
+
 st.markdown("<h1 class='main-header'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown("<p class='tagline'>نظافة.. راحة.. بلمسة ذكية</p>", unsafe_allow_html=True)
 
-# --- قسم النبذة الظاهرة (بدون كبس زر) ---
+# --- قسم النبذة الظاهرة ---
 st.markdown("""
 <div class="static-about-box">
     <strong>✨ لماذا نسمة؟</strong><br>
@@ -105,10 +102,9 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # --- توسيط زر الحجز تماماً ---
-    left_side, center_btn, right_side = st.columns([1, 2, 1])
-    
-    with center_btn:
+    # --- توسيط زر الحجز ---
+    left, center, right = st.columns([1, 2, 1])
+    with center:
         if st.button("تأكيد البيانات وإرسال الحجز"):
             if name and phone:
                 raw_msg = f"طلب حجز جديد من نسمة 🌬️\n👤 الاسم: {name}\n📞 الجوال: {phone}\n🧹 المختصة: {cleaner}\n📅 الموعد: {date} الساعة {time}"
