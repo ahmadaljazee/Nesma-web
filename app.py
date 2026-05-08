@@ -31,7 +31,7 @@ st.markdown(f"""
     footer {{visibility: hidden !important;}}
     .stDeployButton {{display:none !important;}}
     
-    /* ضبط الخلفية (bg.png) مع شفافية منخفضة جداً لتكون واضحة */
+    /* ضبط الخلفية (bg.png) مع شفافية منخفضة لتكون واضحة جداً */
     .stApp {{
         background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url("data:image/png;base64,{bg_base64}");
         background-size: cover;
@@ -55,7 +55,12 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    /* تصميم زر الحجز (واتساب) */
+    /* --- كود توسيط الزر تماماً --- */
+    .stButton {{
+        display: flex;
+        justify-content: center;
+    }}
+
     div.stButton > button {{
         background-color: #00c853 !important;
         color: white !important;
@@ -63,6 +68,7 @@ st.markdown(f"""
         font-weight: bold;
         height: 55px;
         width: 100%;
+        max-width: 400px; /* تحديد عرض أقصى للزر ليبقى متناسقاً */
         border: none !important;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         font-size: 20px !important;
@@ -78,7 +84,7 @@ st.markdown(f"""
 
 # --- 3. واجهة التطبيق ---
 
-# عرض اللوجو الرئيسي (logo.png) في المنتصف
+# عرض اللوجو الرئيسي (logo.png) موسطاً
 if os.path.exists("logo.png"):
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
@@ -106,10 +112,9 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # معالجة زر الحجز
+    # الزر الآن سيظهر في المنتصف تلقائياً بسبب تنسيق CSS المضاف
     if st.button("تأكيد الحجز وإرسال عبر واتساب"):
         if name and phone:
-            # صياغة الرسالة
             raw_msg = (
                 f"طلب حجز جديد من تطبيق نسمة 🌬️\n"
                 f"--------------------------\n"
@@ -122,7 +127,6 @@ with st.container():
             encoded_msg = urllib.parse.quote(raw_msg)
             whatsapp_link = f"https://wa.me/962777278329?text={encoded_msg}"
             
-            # فتح الرابط باستخدام JavaScript
             st.components.v1.html(f"<script>window.open('{whatsapp_link}', '_blank');</script>", height=0)
             st.success("جاري تحويلك إلى واتساب لتأكيد طلبك...")
         else:
