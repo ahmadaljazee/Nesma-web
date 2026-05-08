@@ -35,13 +35,39 @@ st.markdown(f"""
         text-align: center;
         color: #aaaaaa;
         font-size: 14px;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+    }}
+    /* تنسيق قسم نبذة عنا داخل الـ Expander */
+    .about-section {{
+        text-align: right;
+        line-height: 1.6;
+        direction: rtl;
+        padding: 10px;
     }}
     </style>
     """, unsafe_allow_html=True)
 
 st.markdown("<h1 style='text-align: center; color: #8ff48f;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
 st.markdown('<div class="bio-text">نسمة.. نظافة.. راحة.. بلمسة ذكية.</div>', unsafe_allow_html=True)
+
+# --- قسم نبذة عنا (تمت إضافته هنا) ---
+with st.expander("✨ تعرف على نسمة"):
+    st.markdown("""
+    <div class="about-section">
+        <strong>نسمة.. أكثر من مجرد خدمة تنظيف.</strong><br>
+        نحن فريق يسعى لإعادة تعريف الراحة المنزلية. من خلال تطبيقنا، نضع بين يديكِ 
+        نخبة من العاملات المختصات لضمان منزل يفوح بالنظافة والترتيب. 
+        <br><br>
+        <b>لماذا تختارين نسمة؟</b>
+        <ul>
+            <li>دقة في المواعيد.</li>
+            <li>عاملات مدربات وصاحبات خبرة.</li>
+            <li>نظام حجز ذكي وسلس عبر الواتساب.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # --- نموذج الحجز ---
 with st.container():
@@ -73,7 +99,6 @@ with st.container():
             whatsapp_url = f"https://wa.me/{admin_phone}?text={encoded_message}"
             
             # 3. تنفيذ الفتح التلقائي عبر JavaScript مخفي
-            # نستخدم target="_self" لضمان الفتح السلس في بعض المتصفحات
             js_code = f"""
             <script>
                 window.location.href = "{whatsapp_url}";
@@ -84,20 +109,5 @@ with st.container():
             st.info("جاري التحويل إلى واتساب...")
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال أولاً.")
-# --- قسم نبذة عنا ---
-with st.expander("✨ تعرف على نسمة"):
-    st.markdown("""
-    <div style='text-align: right; line-height: 1.6;'>
-        <strong>نسمة.. أكثر من مجرد خدمة تنظيف.</strong><br>
-        نحن فريق يسعى لإعادة تعريف الراحة المنزلية. من خلال تطبيقنا، نضع بين يديكِ 
-        نخبة من العاملات المختصات لضمان منزل يفوح بالنظافة والترتيب. 
-        <br><br>
-        <b>لماذا تختارين نسمة؟</b>
-        <ul>
-            <li>دقة في المواعيد.</li>
-            <li>عاملات مدربات وصاحبات خبرة.</li>
-            <li>نظام حجز ذكي وسلس عبر الواتساب.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+
 st.markdown("<p style='text-align: center; font-size: 10px; color: #444; margin-top: 50px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
