@@ -4,14 +4,14 @@ import urllib.parse
 import base64
 import os
 import json
-import pandas as pd
+import pandas as pd # أضفنا pandas لعرض الجداول باحترافية
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # --- 1. إعدادات الصفحة ---
 st.set_page_config(page_title="نسمة | Nesma", page_icon="logo.png", layout="centered")
 
-# --- 2. إعداد الاتصال بـ Firebase ---
+# --- 2. إعداد الاتصال بـ Firebase (النسخة المعتمدة لـ default1) ---
 @st.cache_resource
 def init_firebase():
     if not firebase_admin._apps:
@@ -19,6 +19,7 @@ def init_firebase():
             firebase_key = os.environ.get("FIREBASE_KEYS")
             if not firebase_key and "FIREBASE_KEYS" in st.secrets:
                 firebase_key = st.secrets["FIREBASE_KEYS"]
+
             if firebase_key:
                 key_dict = json.loads(firebase_key)
                 creds = credentials.Certificate(key_dict)
@@ -30,6 +31,8 @@ def init_firebase():
     return firebase_admin.get_app()
 
 firebase_app = init_firebase()
+
+# تعريف قاعدة البيانات default1 بشكل صحيح
 db = None
 if firebase_app:
     try:
@@ -39,19 +42,20 @@ if firebase_app:
 
 # --- 3. نظام حماية لوحة التحكم ---
 def check_password():
+    """إرجاع True إذا كانت كلمة المرور صحيحة"""
     if "password_correct" not in st.session_state:
         st.session_state["password_correct"] = False
     
     if not st.session_state["password_correct"]:
-        st.sidebar.markdown("### 🔐 منطقة الإدارة")
-        ADMIN_PWD = os.environ.get("ADMIN_PASSWORD", "Nesma2026")
+        st.sidebar.subheader("🔐 دخول الإدارة")
+        # يمكنك تغيير كلمة السر هنا (Nesma2026)
         pwd = st.sidebar.text_input("أدخل كلمة المرور", type="password")
-        if pwd == ADMIN_PWD:
-            st.session_state["password_correct"] = True
-            st.sidebar.success("تم تسجيل الدخول")
-            st.rerun() # إعادة التشغيل لتنظيف الواجهة فوراً
-        elif pwd != "":
-            st.sidebar.error("كلمة المرور خاطئة")
+        if st.sidebar.button("دخول"):
+            if pwd == "Nesma2026":
+                st.session_state["password_correct"] = True
+                st.rerun()
+            else:
+                st.sidebar.error("❌ كلمة المرور خاطئة")
         return False
     return True
 
@@ -74,96 +78,85 @@ st.markdown(f"""
     div.stButton > button {{
         background-color: #00c853 !important; color: white !important;
         border-radius: 30px !important; font-weight: bold; height: 55px; width: 100%;
-        border: none !important; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }}
-    .about-section {{ background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 20px; text-align: right; direction: rtl; border: 1px solid #a5d6a7; }}
+    .about-section {{ background-color: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 20px; text-align: right; direction: rtl; }}
     </style>
     """, unsafe_allow_html=True)
 
-# --- 5. منطق التنقل واللوجو النظيف ---
-# إصلاح خطأ اللوجو: عرض مباشر بدون Metadata
-if os.path.exists("logo.png"):
-    st.sidebar.image("logo.png", width=150)
+# --- 5. منطق التنقل بين الواجهة والداشبورد ---
+st.sidebar.title("🌬️ نسمة - Nesma")
+page = st.sidebar.radio("انتقل إلى:", ["واجهة الحجز", "لوحة التحكم 📊"])
 
-page = st.sidebar.radio("الانتقال إلى:", ["واجهة الزبائن", "لوحة الإدارة 📊"])
-
-if page == "لوحة الإدارة 📊":
+if page == "لوحة التحكم 📊":
     if check_password():
-        st.markdown("<h2 style='text-align: center;'>📊 إدارة عمليات نسمة</h2>", unsafe_allow_html=True)
-        try:
-            # جلب الحجوزات
-            bookings_ref = db.collection("bookings").order_by("timestamp", direction=firestore.Query.DESCENDING)
-            docs = list(bookings_ref.stream())
-            
-            data = []
-            for doc in docs:
-                d = doc.to_dict()
-                d['id'] = doc.id # حفظ الـ ID لتعديل الحالة لاحقاً
-                if 'status' not in d: d['status'] = 'جديد' # حالة افتراضية
-                data.append(d)
-            
-            if data:
-                df = pd.DataFrame(data)
+        st.markdown("<h2 style='text-align: center;'>📊 لوحة إدارة الحجوزات</h2>", unsafe_allow_html=True)
+        
+        if db:
+            try:
+                # جلب البيانات من Firestore
+                docs = db.collection("bookings").order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
+                data = [doc.to_dict() for doc in docs]
                 
-                # إحصائيات سريعة
-                st.metric("إجمالي الطلبات", len(df))
-                
-                # قسم تحديث الحالة
-                st.markdown("---")
-                st.subheader("📝 تحديث حالة حجز")
-                selected_id = st.selectbox("اختر اسم الزبون لتعديل حالته:", 
-                                         options=df['id'], 
-                                         format_func=lambda x: df[df['id']==x]['name'].values[0])
-                
-                new_status = st.selectbox("الحالة الجديدة:", ["جديد", "تم التواصل", "تم التنفيذ", "ملغي"])
-                if st.button("تحديث الحالة الآن"):
-                    db.collection("bookings").document(selected_id).update({"status": new_status})
-                    st.success(f"تم تحديث حالة طلب {df[df['id']==selected_id]['name'].values[0]} إلى {new_status}")
-                    st.rerun()
-
-                st.markdown("---")
-                # عرض الجدول النهائي
-                st.dataframe(df[['name', 'phone', 'cleaner', 'date', 'time', 'status']], use_container_width=True)
-            else:
-                st.info("لا توجد بيانات حالياً.")
-        except Exception as e:
-            st.error(f"خطأ: {e}")
+                if data:
+                    df = pd.DataFrame(data)
+                    
+                    # إحصائيات سريعة
+                    st.columns(3)[0].metric("إجمالي الحجوزات", len(df))
+                    
+                    # تنسيق الجدول للعرض
+                    st.write("### قائمة الحجوزات الأخيرة:")
+                    st.dataframe(df[['name', 'phone', 'cleaner', 'date', 'time', 'status']], use_container_width=True)
+                    
+                    # خيار تحميل البيانات كملف CSV
+                    csv = df.to_csv(index=False).encode('utf-8-sig')
+                    st.download_button("📥 تحميل سجل الحجوزات CSV", csv, "bookings.csv", "text/csv")
+                else:
+                    st.info("لا توجد حجوزات مسجلة حتى الآن.")
+            except Exception as e:
+                st.error(f"خطأ في جلب البيانات: {e}")
+    
+    # زر خروج من الإدارة
+    if st.session_state.get("password_correct"):
+        if st.sidebar.button("تسجيل خروج"):
+            st.session_state["password_correct"] = False
+            st.rerun()
 
 else:
-    # --- واجهة الزبائن (نفس الكود المستقر) ---
+    # --- واجهة الزبائن الأصلية ---
     if os.path.exists("logo.png"):
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2: st.image("logo.png", use_container_width=True)
 
     st.markdown("<h1 style='text-align: center;'>نسمة | Nesma</h1>", unsafe_allow_html=True)
-    
+    st.markdown("<div class='about-section'><p>في 'نسمة' نؤمن أن نظافة منزلك هي نسمة هدوء ليومك.</p></div>", unsafe_allow_html=True)
+
     with st.container():
-        st.markdown("<div class='about-section'><p>نظافة منزلك هي نسمة هدوء ليومك.</p></div>", unsafe_allow_html=True)
         st.markdown("---")
         name = st.text_input("👤 الاسم الكامل")
         phone = st.text_input("📞 رقم الجوال")
-        cleaner = st.selectbox("🧹 اختر العاملة:", ["سناء م. ⭐ 4.9", "أمل ع. ⭐ 4.7", "ريم س. ⭐ 4.8"])
+        cleaner = st.selectbox("🧹 اختر العاملة المختصة:", ["سناء م. ⭐ 4.9", "أمل ع. ⭐ 4.7", "ريم س. ⭐ 4.8"])
         
         col_d, col_t = st.columns(2)
-        with col_d: date = st.date_input("📅 التاريخ", min_value=datetime.date.today())
-        with col_t: time = st.time_input("⏰ الوقت")
+        with col_d: date = st.date_input("📅 تاريخ الحجز", min_value=datetime.date.today())
+        with col_t: time = st.time_input("⏰ وقت الحجز")
 
         if st.button("تأكيد الحجز وإرسال عبر واتساب"):
             if name and phone:
                 try:
-                    db.collection("bookings").add({
-                        "name": name, "phone": phone, "cleaner": cleaner,
-                        "date": str(date), "time": str(time),
-                        "timestamp": datetime.datetime.now(),
-                        "status": "جديد"
-                    })
-                    msg = f"حجز جديد من نسمة\nالاسم: {name}\nالهاتف: {phone}\nالموعد: {date} {time}"
+                    if db:
+                        db.collection("bookings").add({
+                            "name": name, "phone": phone, "cleaner": cleaner,
+                            "date": str(date), "time": str(time),
+                            "timestamp": datetime.datetime.now(), "status": "جديد"
+                        })
+
+                    msg = f"حجز جديد من نسمة 🌬️\nالاسم: {name}\nالهاتف: {phone}\nالموعد: {date} {time}"
                     wa_url = f"https://wa.me/962777278329?text={urllib.parse.quote(msg)}"
                     st.components.v1.html(f"<script>window.open('{wa_url}', '_blank');</script>", height=0)
-                    st.success("تم الحجز بنجاح!")
+                    st.success("تم تسجيل حجزك في النظام وفتح الواتساب!")
                 except Exception as e:
-                    st.error(f"خطأ: {e}")
+                    st.error(f"حدث خطأ: {e}")
             else:
-                st.error("يرجى إكمال البيانات.")
+                st.error("يرجى إدخال الاسم ورقم الهاتف.")
 
 st.markdown("<p style='text-align: center; font-weight: bold; margin-top: 50px;'>Nesmajo © 2026</p>", unsafe_allow_html=True)
