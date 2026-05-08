@@ -5,87 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نسمة | Nesma</title>
     <style>
+        :root { --main-green: #2e7d32; --light-green: #00c853; }
         body {
             margin: 0; padding: 0;
             background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('/static/bg.png');
             background-size: cover; background-position: center; background-attachment: fixed;
             font-family: 'Segoe UI', Tahoma, sans-serif; color: #0a3d0d;
         }
+        /* شريط التبويبات العلوي */
+        .tabs-header {
+            position: sticky; top: 0; z-index: 1000;
+            display: flex; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto; white-space: nowrap;
+        }
+        .tab-btn {
+            flex: 1; padding: 15px 10px; border: none; background: none;
+            font-weight: bold; color: var(--main-green); cursor: pointer;
+            transition: 0.3s; border-bottom: 3px solid transparent; font-size: 14px;
+        }
+        .tab-btn.active { border-bottom: 3px solid var(--light-green); background: #f1f8e9; }
+
         .container { max-width: 450px; margin: auto; padding: 20px; text-align: center; }
-        .logo { width: 140px; margin: 20px 0; }
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+
         .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; border: 1px solid #a5d6a7; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        h1 { margin: 10px 0; font-size: 24px; }
-        .about-box { background: #e8f5e9; padding: 15px; border-radius: 12px; font-size: 14px; line-height: 1.6; margin-bottom: 20px; text-align: justify; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #2e7d32; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .gps-btn { background: #ffffff; border: 1px dashed #2e7d32; padding: 10px; border-radius: 10px; cursor: pointer; color: #2e7d32; font-weight: bold; margin: 10px 0; }
-        .submit-btn { background: #2e7d32; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; }
-        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .submit-btn:hover, .whatsapp-btn:hover { transform: scale(1.02); opacity: 0.9; }
-        .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; font-size: 12px; font-weight: bold; }
-        .feat-item { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 20px; border: 1px solid #a5d6a7; }
-        hr { margin: 25px 0; border: 0; border-top: 1px dashed #a5d6a7; }
+        .logo { width: 100px; margin: 10px 0; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--main-green); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .submit-btn { background: var(--main-green); color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .whatsapp-btn { background: #25D366; color: white; display: block; padding: 15px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main-green); text-align: right; }
     </style>
 </head>
 <body>
+
+    <div class="tabs-header">
+        <button class="tab-btn active" onclick="openTab(event, 'main')">الرئيسية</button>
+        <button class="tab-btn" onclick="openTab(event, 'about')">من نحن</button>
+        <button class="tab-btn" onclick="openTab(event, 'services')">خدماتنا</button>
+        <button class="tab-btn" onclick="openTab(event, 'staff')">الموظفين</button>
+        <button class="tab-btn" onclick="openTab(event, 'contact')">اتصل بنا</button>
+    </div>
+
     <div class="container">
         <img src="/static/logo.png" class="logo" onerror="this.style.display='none'">
-        <div class="card">
-            <h1>نسمة | Nesma</h1>
-            <p style="font-weight: bold;">رعــــاية..جـــودة..أمـــان</p>
-            
-            <div class="about-box">
-                في "نسمة"، نؤمن أن نظافة منزلك هي نسمة هدوء ليومك. نوفر لكِ نخبة من العاملات المختصات بخصوصية تامة واحترافية تليق بكِ.
-            </div>
 
-            <form action="/save_booking" method="POST">
-                <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
-                <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
-                <select name="cleaner">
-                    <option>سناء م. ⭐ 4.9</option>
-                    <option>أمل ع. ⭐ 4.7</option>
-                    <option>ريم س. ⭐ 4.8</option>
-                </select>
-                <div style="display: flex; gap: 10px;">
+        <div id="main" class="tab-content active">
+            <div class="card">
+                <h1>احجز نسمة الآن</h1>
+                <form action="/save_booking" method="POST">
+                    <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
+                    <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
+                    <select name="cleaner">
+                        <option>سناء م. ⭐ 4.9</option>
+                        <option>أمل ع. ⭐ 4.7</option>
+                        <option>ريم س. ⭐ 4.8</option>
+                    </select>
                     <input type="date" name="date" required>
                     <input type="time" name="time" required>
-                </div>
-
-                <input type="hidden" name="lat" id="lat">
-                <input type="hidden" name="lon" id="lon">
-                
-                <div class="gps-btn" onclick="getLocation()" id="gpsLabel">📍 اضغط لتحديد موقعك تلقائياً</div>
-
-                <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
-            </form>
-
-            <hr>
-            
-            <p style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">هل لديك استفسار؟ تواصل معنا مباشرة</p>
-            <a href="https://wa.me/962777278329" class="whatsapp-btn" target="_blank">
-                💬 دردشة واتساب سريعة
-            </a>
-
-            <div class="features">
-                <span class="feat-item">✨ عاملات مختصات</span>
-                <span class="feat-item">🕒 حجز سريع</span>
-                <span class="feat-item">🔒 خصوصية تامة</span>
+                    <input type="hidden" name="lat" id="lat">
+                    <input type="hidden" name="lon" id="lon">
+                    <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
+                    <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
+                </form>
             </div>
         </div>
+
+        <div id="about" class="tab-content">
+            <div class="card">
+                <h2>من نحن؟</h2>
+                <p>نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات لضمان راحتكِ وخصوصيتكِ.</p>
+            </div>
+        </div>
+
+        <div id="services" class="tab-content">
+            <div class="info-card">✨ تنظيف منازل دوري</div>
+            <div class="info-card">✨ تنظيف عميق (بعد البناء)</div>
+            <div class="info-card">✨ خدمة التدبير المنزلي بالساعات</div>
+        </div>
+
+        <div id="staff" class="tab-content">
+            <div class="info-card">👩‍💼 <b>سناء م.</b> (خبيرة تعقيم - 5 سنوات خبرة)</div>
+            <div class="info-card">👩‍💼 <b>أمل ع.</b> (مختصة ترتيب وتنظيم - 4 سنوات خبرة)</div>
+            <div class="info-card">👩‍💼 <b>ريم س.</b> (تنظيف عميق وسريع - 3 سنوات خبرة)</div>
+        </div>
+
+        <div id="contact" class="tab-content">
+            <div class="card">
+                <h2>تواصل معنا</h2>
+                <p>نحن متاحون لخدمتكم على مدار الساعة</p>
+                <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
+                <p>📧 Email: info@nesmajo.com</p>
+            </div>
+        </div>
+
         <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
     </div>
 
     <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
         function getLocation() {
             const btn = document.getElementById("gpsLabel");
             if (navigator.geolocation) {
-                btn.innerText = "⏳ جاري تحديد الموقع...";
+                btn.innerText = "⏳ جاري التحديد...";
                 navigator.geolocation.getCurrentPosition((pos) => {
                     document.getElementById("lat").value = pos.coords.latitude;
                     document.getElementById("lon").value = pos.coords.longitude;
-                    btn.innerText = "✅ تم تحديد موقعك بنجاح";
-                    btn.style.background = "#e8f5e9";
-                }, () => {
-                    btn.innerText = "❌ يرجى تفعيل الـ GPS";
+                    btn.innerText = "✅ تم تحديد موقعك";
                 });
             }
         }
