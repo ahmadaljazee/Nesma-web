@@ -30,20 +30,7 @@ st.markdown(f"""
         width: 100%;
         font-weight: bold;
         height: 50px;
-    }}
-    /* تنسيق رابط الواتساب ليظهر كأنه زر أخضر مميز */
-    .whatsapp-button {{
-        display: inline-block;
-        padding: 15px 25px;
-        background-color: #25D366;
-        color: white !important;
-        text-decoration: none;
-        border-radius: 25px;
-        font-weight: bold;
-        text-align: center;
-        width: 100%;
-        font-size: 18px;
-        margin-top: 10px;
+        border: none !important;
     }}
     .bio-text {{
         text-align: center;
@@ -76,22 +63,26 @@ with st.container():
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    if st.button("تأكيد البيانات"):
+    if st.button("تأكيد البيانات وإرسال الحجز"):
         if name and phone:
             # تجهيز الرسالة
             raw_message = f"طلب حجز جديد من موقع نسمة\nالاسم: {name}\nالجوال: {phone}\nالعاملة: {cleaner}\nالموعد: {date} الساعة {time}"
             
-            # تشفير الرسالة لتعمل بشكل صحيح في الروابط (عشان المسافات واللغة العربية)
+            # تشفير الرسالة
             encoded_message = urllib.parse.quote(raw_message)
-            
             admin_phone = "962777278329"
             whatsapp_url = f"https://wa.me/{admin_phone}?text={encoded_message}"
             
-            st.success(f"تم تجهيز طلبك يا {name}!")
+            st.success(f"تم التأكيد يا {name}! جاري فتح واتساب تلقائياً...")
             
-            # إظهار زر "الانتقال للواتساب" بشكل واضح
-            # هذا الزر لا يمكن للمتصفح حظره لأنه رابط مباشر
-            st.markdown(f'<a href="{whatsapp_url}" target="_blank" class="whatsapp-button">اضغط هنا لإرسال الحجز عبر واتساب 💬</a>', unsafe_allow_html=True)
+            # --- كود JavaScript للفتح التلقائي ---
+            js = f"""
+            <script>
+                window.open("{whatsapp_url}", "_blank");
+            </script>
+            """
+            st.components.v1.html(js, height=0)
+            
         else:
             st.warning("الرجاء إدخال الاسم ورقم الجوال لإتمام الحجز.")
 
