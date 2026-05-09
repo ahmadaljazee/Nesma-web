@@ -20,7 +20,30 @@
     </style>
 </head>
 <body>
+<div class="card" style="margin-bottom: 20px; padding: 10px;">
+    <h3 style="color: #2e7d32; margin-top: 0;">📍 خريطة التوزيع الجغرافي لليوم</h3>
+    <div id="map" style="height: 400px; width: 100%; border-radius: 10px; border: 2px solid #2e7d32;"></div>
+</div>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // إعداد الخريطة ومركزها (عمان، الأردن)
+    var map = L.map('map').setView([31.9454, 35.9284], 11); 
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // إضافة النقاط برمجياً من بيانات الحجوزات
+    {% for b in bookings %}
+        {% if b.location and b.location.lat and b.location.lon %}
+            var marker = L.marker([{{ b.location.lat }}, {{ b.location.lon }}]).addTo(map);
+            marker.bindPopup("<b>الزبون: {{ b.name }}</b><br>العاملة: {{ b.cleaner }}<br>الموعد: {{ b.time }}");
+        {% endif %}
+    {% endfor %}
+</script>
     <div class="header">
         <h1>إجمالي الحجوزات المستلمة</h1>
         <a href="/admin-logout" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 5px 15px; border-radius: 10px;">تسجيل الخروج</a>
