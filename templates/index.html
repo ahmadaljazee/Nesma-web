@@ -166,12 +166,14 @@
 
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
     <input type="text" name="date" placeholder="📅 اختر تاريخ الحجز" 
-           onfocus="(this.type='date')" 
+           onfocus="this.type='date'; try{this.showPicker();}catch(e){}" 
+           onclick="try{this.showPicker();}catch(e){}"
            onblur="(this.value=='' ? this.type='text' : this.type='date')" 
            required style="flex: 1;">
 
     <input type="text" name="time" placeholder="⏰ اختر ساعة البدء" 
-           onfocus="(this.type='time')" 
+           onfocus="this.type='time'; try{this.showPicker();}catch(e){}" 
+           onclick="try{this.showPicker();}catch(e){}"
            onblur="(this.value=='' ? this.type='text' : this.type='time')" 
            required style="flex: 1;">
 </div>
