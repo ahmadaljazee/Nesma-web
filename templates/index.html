@@ -378,7 +378,25 @@
         // نترك البيانات قليلاً لضمان وصولها ثم نمسحها
         setTimeout(() => localStorage.clear(), 1000);
     };
-</script>
+</script> function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    
+    // إخفاء كل المحتويات أولاً
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    
+    // إزالة اللون الأخضر "النشط" من كل الأزرار
+    tablinks = document.getElementsByClassName("tab-btn");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    
+    // إظهار التبويب المطلوب وإضافة اللون الأخضر للزر المختار
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
 </body>
 
 </html>
