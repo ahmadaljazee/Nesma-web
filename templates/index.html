@@ -160,20 +160,20 @@
     </div>
 
     <script>
-        // 1. إخفاء شاشة الترحيب بعد التحميل
+        // 1. إدارة شاشة الترحيب
         window.onload = function() {
             setTimeout(function() {
-                document.getElementById('splash').style.transition = "0.5s";
-                document.getElementById('splash').style.opacity = "0";
-                setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 500);
-            }, 1500); // تظهر لمدة ثانية ونصف
+                const splash = document.getElementById('splash');
+                splash.style.transition = "0.8s ease-out";
+                splash.style.opacity = "0";
+                setTimeout(() => { splash.style.display = 'none'; }, 800);
+            }, 1500);
         };
 
-        // 2. فحص حالة الحجز لإظهار نافذة النجاح (بدون رابط ريندر)
+        // 2. إدارة نافذة النجاح
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('status') === 'success') {
             document.getElementById('successModal').style.display = 'flex';
-            // تنظيف الرابط لإزالة "success" حتى لا تظهر الرسالة عند تحديث الصفحة
             window.history.replaceState({}, document.title, "/");
         }
 
@@ -181,7 +181,43 @@
             document.getElementById('successModal').style.display = 'none';
         }
 
-        // Service Worker
+        // 3. تحديد الموقع المحسن (لحل مشكلة التعليق)
+        function getLocation() {
+            const btn = document.getElementById("gpsLabel");
+            if (navigator.geolocation) {
+                btn.innerText = "⏳ جاري الاتصال بالأقمار الصناعية...";
+                
+                const options = {
+                    enableHighAccuracy: true, 
+                    timeout: 15000,           
+                    maximumAge: 0             
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        document.getElementById("lat").value = pos.coords.latitude;
+                        document.getElementById("lon").value = pos.coords.longitude;
+                        btn.innerText = "✅ تم تحديد موقعك بدقة";
+                        btn.style.color = "#00c853";
+                    }, 
+                    (err) => {
+                        console.error(err);
+                        if (err.code === 1) {
+                            btn.innerText = "❌ يرجى السماح للتطبيق بالوصول للموقع";
+                        } else if (err.code === 3) {
+                            btn.innerText = "❌ انتهى الوقت، تأكد من تشغيل الـ GPS";
+                        } else {
+                            btn.innerText = "❌ فشل التحديد، حاول مرة أخرى";
+                        }
+                    }, 
+                    options
+                );
+            } else {
+                btn.innerText = "❌ جهازك لا يدعم خاصية تحديد الموقع";
+            }
+        }
+
+        // 4. التبويبات و Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); });
         }
@@ -194,20 +230,6 @@
             for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
-        }
-
-        function getLocation() {
-            const btn = document.getElementById("gpsLabel");
-            if (navigator.geolocation) {
-                btn.innerText = "⏳ جاري التحديد...";
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    document.getElementById("lat").value = pos.coords.latitude;
-                    document.getElementById("lon").value = pos.coords.longitude;
-                    btn.innerText = "✅ تم تحديد موقعك";
-                }, () => {
-                    btn.innerText = "❌ تعذر تحديد الموقع";
-                });
-            }
         }
     </script>
 </body>
