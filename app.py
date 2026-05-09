@@ -6,9 +6,9 @@ import os
 import json
 
 app = Flask(__name__)
-app.secret_key = "NESMA_SECRET_KEY_2026" # مفتاح الأمان للجلسات
+app.secret_key = "NESMA_SECRET_KEY_2026" 
 
-# --- إعداد Firebase (قاعدة البيانات default1) ---
+# --- إعداد Firebase ---
 if not firebase_admin._apps:
     firebase_key = os.environ.get("FIREBASE_KEYS")
     if firebase_key:
@@ -21,15 +21,14 @@ if not firebase_admin._apps:
 
 db = firestore.client(database_id="default1")
 
-# --- إعدادات المدير ---
-ADMIN_PASSWORD = "123" # كلمة المرور للوحة التحكم
+ADMIN_PASSWORD = "123" 
 
 # --- 1. واجهة الزبائن الرئيسية ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# --- 2. مسار الحجز (تعديل لاستلام المستلزمات الإضافية) ---
+# --- 2. مسار الحجز (التعديل لإخفاء الرابط) ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
@@ -40,11 +39,7 @@ def save_booking():
         time = request.form.get('time')
         lat = request.form.get('lat')
         lon = request.form.get('lon')
-
-        # --- الجزء الجديد: استلام الخيارات الأربعة (Checkboxes) ---
-        # نستخدم getlist لأن الزبون قد يختار أكثر من خيار واحد
         extras = request.form.getlist('extra')
-        # تحويل القائمة إلى نص واحد مفصول بفواصل لتسهيل القراءة في لوحة التحكم
         extras_str = ", ".join(extras) if extras else "لا يوجد"
 
         map_link = f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
@@ -55,22 +50,19 @@ def save_booking():
             "cleaner": cleaner,
             "date": date,
             "time": time,
-            "extra_supplies": extras_str, # حفظ المستلزمات في قاعدة البيانات
+            "extra_supplies": extras_str,
             "location": {"lat": lat, "lon": lon},
             "map_url": map_link,
             "status": "جديد",
             "timestamp": datetime.datetime.now()
         }
 
-        # حفظ البيانات في Firestore في مجموعة "bookings"
         db.collection("bookings").add(booking)
         
-        return '''
-            <script>
-                alert("✅ تم استلام طلب الحجز بنجاح! سنتواصل معك قريباً.");
-                window.location.href = "/";
-            </script>
-        '''
+        # التعديل هنا: إعادة التوجيه للصفحة الرئيسية مع حالة النجاح
+        # هذا يمنع ظهور رابط Render في المتصفح
+        return redirect(url_for('index', status='success'))
+
     except Exception as e:
         return f"حدث خطأ أثناء الحفظ: {e}"
 
@@ -83,15 +75,7 @@ def admin_login():
             return redirect(url_for('admin_dashboard'))
         else:
             return "كلمة مرور خاطئة!"
-    return '''
-        <div style="text-align:center; margin-top:100px; font-family:sans-serif; direction:rtl;">
-            <h2>قفل الأمان - لوحة تحكم نسمة</h2>
-            <form method="post">
-                <input type="password" name="password" placeholder="كلمة المرور" style="padding:10px; border-radius:5px;">
-                <button type="submit" style="padding:10px 20px; background:#2e7d32; color:white; border:none; border-radius:5px; cursor:pointer;">دخول</button>
-            </form>
-        </div>
-    '''
+    return render_template('login.html') # يفضل وضع كود الدخول في ملف html منفصل
 
 # --- 4. لوحة التحكم (عرض البيانات) ---
 @app.route('/admin')
@@ -99,7 +83,6 @@ def admin_dashboard():
     if not session.get('logged_in'):
         return redirect(url_for('admin_login'))
     
-    # جلب الحجوزات مرتبة من الأحدث إلى الأقدم
     bookings_ref = db.collection("bookings").order_by("timestamp", direction="DESCENDING")
     bookings = [doc.to_dict() for doc in bookings_ref.stream()]
     
