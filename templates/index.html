@@ -156,7 +156,7 @@
 
                 <h1>احجز نسمة الآن</h1>
 
-                <form action="/save_booking" method="POST">
+                      <form action="/save_booking" method="POST" id="bookingForm" onsubmit="setTimeout(() => { this.reset(); }, 500);">
 
                     <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
 
@@ -354,6 +354,24 @@
         <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
 
         <script>
+            window.onload = function() {
+    // تفريغ الفورم إجبارياً عند تحميل الصفحة
+    const form = document.getElementById('bookingForm');
+    if(form) form.reset();
+    
+    // مسح الذاكرة المؤقتة للمتصفح (localStorage)
+    localStorage.clear();
+
+    // بقية كود السبلّاش (Splash Screen) كما هو...
+    setTimeout(function() {
+        const splash = document.getElementById('splash');
+        if(splash) {
+            splash.style.transition = "0.8s";
+            splash.style.opacity = "0";
+            setTimeout(() => { splash.style.display = 'none'; }, 800);
+        }
+    }, 1500);
+};
     // 1. دالة التبويبات
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
