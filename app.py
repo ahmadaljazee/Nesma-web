@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login' # المسار الذي يتم توجيه المستخدم إليه إذا لم يكن مسجلاً
+login_manager.login_view = 'login' 
 
 # --- تعريف الجداول (Models) ---
 
@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     full_name = db.Column(db.String(100))
-    role = db.Column(db.String(20), default='customer') # customer, worker, admin
+    role = db.Column(db.String(20), default='customer') 
     bookings = db.relationship('Booking', backref='customer', lazy=True)
 
 class Worker(db.Model):
@@ -44,11 +44,15 @@ class Booking(db.Model):
     time = db.Column(db.String(50))
     extra_supplies = db.Column(db.Text)
     status = db.Column(db.String(50), default='جديد')
+    
+    # حقول الإحداثيات المضافة للخريطة
+    lat = db.Column(db.Float) 
+    lon = db.Column(db.Float)
+    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-# تحميل المستخدم للجلسة
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -59,47 +63,40 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-# مسار تسجيل مستخدم جديد
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         phone = request.form.get('phone')
         password = request.form.get('password')
         name = request.form.get('name')
-        
         hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
         new_user = User(phone=phone, password=hashed_pw, full_name=name)
-        
         try:
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for('login'))
         except:
             flash("رقم الهاتف مسجل مسبقاً")
-    return render_template('signup.html') # تأكد من إنشاء هذا الملف
+    return render_template('signup.html')
 
-# مسار تسجيل الدخول
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         phone = request.form.get('phone')
         password = request.form.get('password')
         user = User.query.filter_by(phone=phone).first()
-        
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
             flash("خطأ في رقم الهاتف أو كلمة السر")
-    return render_template('login.html') # تأكد من إنشاء هذا الملف
+    return render_template('login.html')
 
-# لوحة تحكم العميل
 @app.route('/dashboard')
 @login_required
 def dashboard():
     return render_template('dashboard.html', bookings=current_user.bookings, name=current_user.full_name)
 
-# حفظ الحجز المطور
 @app.route('/save_booking', methods=['POST'])
 @login_required
 def save_booking():
@@ -111,7 +108,12 @@ def save_booking():
             date=request.form.get('date'),
             time=request.form.get('time'),
             extra_supplies=", ".join(extras) if extras else "لا يوجد",
-            user_id=current_user.id # الربط التلقائي بالعميل المسجل
+            
+            # استلام وحفظ الإحداثيات من الفورم
+            lat=float(request.form.get('lat')) if request.form.get('lat') else None,
+            lon=float(request.form.get('lon')) if request.form.get('lon') else None,
+            
+            user_id=current_user.id 
         )
         db.session.add(new_booking)
         db.session.commit()
@@ -119,7 +121,6 @@ def save_booking():
     except Exception as e:
         return f"حدث خطأ: {e}"
 
-# لوحة تحكم الإدارة (Admin)
 @app.route('/admin')
 @login_required
 def admin_dashboard():
@@ -135,6 +136,6 @@ def logout():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all() # إنشاء الجداول تلقائياً في PostgreSQL
+        db.create_all() 
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
