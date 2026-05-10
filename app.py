@@ -105,15 +105,18 @@ def admin_dashboard():
     # جلب البيانات مرتبة من الأحدث إلى الأقدم لعرضها في الجدول
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
     return render_template('admin.html', bookings=bookings)
-
 @app.route('/admin-logout')
 def admin_logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # إنشاء الجداول تلقائياً في قاعدة بيانات رندر عند التشغيل
+    # هذه الأسطر هي التي ستبني الجدول "bookings" في Nesma_DB إذا لم يكن موجوداً
     with app.app_context():
+        print("جاري إنشاء الجداول في Nesma_DB...")
         db.create_all()
+        print("تم إنشاء الجداول بنجاح!")
+        
+    # تشغيل التطبيق على المنفذ الصحيح لرندر
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
