@@ -1,3 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    
+
+    <link rel="manifest" href="/static/manifest.json">
+
+    <meta name="theme-color" content="#2e7d32">
+
+    <link rel="apple-touch-icon" href="/static/logo.png">
+
+
+
+    <title>نسمة | Nesma - خدمات تنظيف منازل احترافية في الأردن</title>
+
+    <meta name="description" content="احجز أفضل عاملات التنظيف بالساعة في عمان مع نسمة. جودة، أمان، وخصوصية تامة لمنزلك.">
+
+    <meta name="keywords" content="تنظيف منازل الأردن, عاملات بالساعة, خدمات نظافة عمان, نسمة, Nesma Cleaning">
+
+    
+
+    <style>
+
+        :root { --main-green: #2e7d32; --light-green: #00c853; }
+
+        body {
+
+            margin: 0; padding: 0;
+
+            background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('/static/bg.png');
+
+            background-size: cover; background-position: center; background-attachment: fixed;
+
+            font-family: 'Segoe UI', Tahoma, sans-serif; color: #0a3d0d;
+
+        }
+
+        .tabs-header {
+
+            position: sticky; top: 0; z-index: 1000;
+
+            display: flex; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+            overflow-x: auto; white-space: nowrap;
+
+        }
+
+        .tab-btn {
+
+            flex: 1; padding: 15px 10px; border: none; background: none;
+
+            font-weight: bold; color: var(--main-green); cursor: pointer;
+
+            transition: 0.3s; border-bottom: 3px solid transparent; font-size: 14px;
+
+        }
+
+        .tab-btn.active { border-bottom: 3px solid var(--light-green); background: #f1f8e9; }
+
+        .container { max-width: 450px; margin: auto; padding: 20px; text-align: center; }
+
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+
+        .tab-content.active { display: block; }
+
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; border: 1px solid #a5d6a7; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+        .logo { width: 100px; margin: 10px 0; }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--main-green); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+
+        .submit-btn { background: var(--main-green); color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+
+        .whatsapp-btn { background: #25D366; color: white; display: block; padding: 15px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main-green); text-align: right; }
+
+        
+
+        .extras-container { text-align: right; margin: 15px 0; padding: 15px; background: #f9fdf9; border-radius: 12px; border: 1px solid #c8e6c9; }
+
+        .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; margin-top: 10px; }
+
+        .extras-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+    </style>
+
+</head>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+        // هنا يمكنك إظهار أي نافذة تصميم (Modal) أو تنبيه أنيق
+        alert("✅ تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
+        // تنظيف الرابط لإزالة كلمة success
+        window.history.replaceState({}, document.title, "/");
+    }
+</script>
+<body>
+    <div id="trustModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+    <div class="card" style="max-width: 300px; border: none; position: relative; padding: 30px 20px;">
+        <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
+        <h3 style="color: var(--main-green); margin: 0 0 10px 0;">أمانكم أولويتنا</h3>
+        <p style="font-size: 14px; line-height: 1.6; color: #555;">
+            نود طمأنتكم بأن جميع كوادرنا خضعوا لـ <b>فحوصات طبية معتمدة</b> ولديهم <b>سجلات أمنية نظيفة</b> لضمان تقديم خدمة آمنة وموثوقة.
+        </p>
+        <button onclick="closeTrustModal()" class="submit-btn" style="margin-top: 15px;">موافق، استمرار</button>
+    </div>
+</div>
+<div id="splash" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; display:flex; justify-content:center; align-items:center;">
+    <img src="/static/logo.png" style="width:150px; animation: pulse 1.5s infinite;">
+</div>
+
+<script>
+    window.onload = function() {
+        setTimeout(function() {
+            document.getElementById('splash').style.display = 'none';
+        }, 1000); // تختفي بعد ثانية واحدة من التحميل
+    };
+</script>
+
+
+    <div class="tabs-header">
+
+        <button class="tab-btn active" onclick="openTab(event, 'main')">الرئيسية</button>
+
+        <button class="tab-btn" onclick="openTab(event, 'about')">من نحن</button>
+
+        <button class="tab-btn" onclick="openTab(event, 'services')">خدماتنا</button>
+
+        <button class="tab-btn" onclick="openTab(event, 'staff')">الموظفين</button>
+
+        <button class="tab-btn" onclick="openTab(event, 'contact')">اتصل بنا</button>
+
+    </div>
+
+
+
+    <div class="container">
+
+        <img src="/static/logo.png" class="logo" onerror="this.style.display='none'">
+
+
+
+        <div id="main" class="tab-content active">
+
+            <div class="card">
+
+                <h1>احجز نسمة الآن</h1>
+
+                <form action="/save_booking" method="POST">
+
+                    <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
+
+                    <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
+
+                    <select name="cleaner">
+
+                        <option value="">اختيار العاملة - اختياري -</option>
+
+                        <option>سناء م. ⭐ 4.9</option>
+
+                        <option>أمل ع. ⭐ 4.7</option>
+
+                        <option>ريم س. ⭐ 4.8</option>
+
+                    </select>
+                    <select name="duration" required onchange="saveData()">
+    <option value="">⏱️ اختر مدة الخدمة</option>
+    <option value="4 ساعات">خدمة سريعة (4 ساعات)</option>
+    <option value="6 ساعات">خدمة كاملة (6 ساعات)</option>
+</select>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <input type="text" name="date" placeholder="📅 اختر تاريخ الحجز" 
+           onfocus="this.type='date'; try{this.showPicker();}catch(e){}" 
+           onclick="try{this.showPicker();}catch(e){}"
+           onblur="(this.value=='' ? this.type='text' : this.type='date')" 
+           required style="flex: 1;">
+
+    <input type="text" name="time" placeholder="⏰ اختر ساعة البدء" 
+           onfocus="this.type='time'; try{this.showPicker();}catch(e){}" 
+           onclick="try{this.showPicker();}catch(e){}"
+           onblur="(this.value=='' ? this.type='text' : this.type='time')" 
+           required style="flex: 1;">
+</div>
+
+
+
+                    <div class="extras-container">
+
+                        <p style="font-weight: bold; margin: 0; color: var(--main-green);">📦 مستلزمات إضافية مطلوبة:</p>
+
+                        <div class="extras-grid">
+
+                            <label><input type="checkbox" name="extra" value="مسحوق غسيل"> مسحوق غسيل</label>
+
+                            <label><input type="checkbox" name="extra" value="مسحوق جلي"> مسحوق جلي</label>
+
+                            <label><input type="checkbox" name="extra" value="معطر جو"> معطر جو</label>
+
+                            <label><input type="checkbox" name="extra" value="مكانس ومماسح"> مكانس ومماسح</label>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <input type="hidden" name="lat" id="lat">
+
+                    <input type="hidden" name="lon" id="lon">
+
+                    <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
+
+                    <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <div id="about" class="tab-content">
+
+            <div class="card">
+
+                <h2 style="color: var(--main-green); margin-bottom: 20px;">من نحن؟ </h2>
+
+                <p style="font-weight: bold; font-size: 1.1rem; line-height: 1.6;">
+
+                    نسمة هي منصة أردنية رائدة تهدف لتوفير أفضل خدمات العناية بالمنزل بأيدي عاملات محترفات ومدربات.
+
+                </p>
+
+                <p style="margin-bottom: 25px;">
+
+                    عائلـة نسمة تؤمن بأن المنزل هو مملكة السكينة، ولأننا نقدر خصوصيتك وتفاصيل يومك، لم يكن شعارنا مجرد أوراق خضراء، بل هو ميثاق نلتزم به تجاهك عبر ثلاث ركائز أساسية:
+
+                </p>
+
+                <div style="text-align: right;">
+
+                    <div class="info-card"><b>🛡️ الرعاية:</b> نحن لا نقوم فقط بالتنظيف لمنزلك، وإنما نعتني به بأيدي أمينة تقدر قيمة التفاصيل لنوفر لك بيئة مريحة تليق بك وبعائلتك.</div>
+
+                    <div class="info-card"><b>⭐ الجودة:</b> نضع بين يديك خبرة احترافية ومعايير دقيقة، فكل خدمة نقدمها هي بصمة إتقان تضمن لك الحصول على أفضل النتائج في كل زيارة.</div>
+
+                    <div class="info-card"><b>🔒 الأمان:</b> أمان عائلتك هو الورقة الأهم في عهدنا، فنحن نختار فريقنا بعناية فائقة مع سجلات طبية وأمنية موثوقة لتستمتع بخدماتنا وأنت مطمئن البال.</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div id="services" class="tab-content">
+    <div class="card">
+        <h2 style="color: var(--main-green); margin-bottom: 20px;">خدمات نسمة الشاملة</h2>
+        
+        <div class="info-card">
+            <b>🏠 رعاية المنازل:</b> 
+            تنظيف عميق للمطابخ والحمامات، ترتيب الغرف، وتنظيف ما بعد البناء والتشطيب للمباني الجديدة.
+        </div>
+
+        <div class="info-card">
+            <b>🌳 الحدائق والمساحات الخارجية:</b> 
+            خدمات تنظيف وتنسيق الحدائق المنزلية لتستمتع بجلسات خارجية نقية.
+        </div>
+
+        <div class="info-card">
+            <b>🏢 الشركات والشقق الفندقية:</b> 
+            تنظيف دوري للمكاتب، وتجهيز الشقق المفروشة والفندقية بأعلى المعايير.
+        </div>
+
+        <div class="info-card">
+            <b>🍴 المطاعم والمنشآت الغذائية:</b> 
+            تنظيف احترافي يومي يشمل الصالات والمطابخ وإزالة الزيوت والشحوم لضمان بيئة صحية.
+        </div>
+    </div>
+</div>
+
+
+
+        <div id="staff" class="tab-content">
+    <div class="card">
+        <h2 style="color: var(--main-green); margin-bottom: 20px;">كادر نسمة.. أمان وخبرة</h2>
+        
+        <p style="font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+            نحن في "نسمة" لا نختار كادرنا عشوائياً، بل نخضع كل فرد في فريقنا لمعايير قبول صارمة لضمان راحة بالكم:
+        </p>
+
+        <div class="info-card" style="border-right-color: #2e7d32;">
+            <b>🔒 السجل الأمني:</b> 
+            جميع أفراد كادرنا حاصلون على شهادة "عدم محكومية" رسمية تثبت نظافة سجلهم الأمني.
+        </div>
+
+        <div class="info-card" style="border-right-color: #2e7d32;">
+            <b>🏥 المعايير الصحية:</b> 
+            يخضع كادرنا لفحوصات طبية دورية معتمدة (شهادة خلو أمراض) لضمان أعلى مستويات السلامة العامة.
+        </div>
+
+        <div class="info-card" style="border-right-color: #2e7d32;">
+            <b>🎓 التأهيل والخبرة:</b> 
+            كادرنا مدرب على أحدث تقنيات التنظيف والتعقيم، مع خبرة عملية لا تقل عن 3 سنوات في التعامل مع مختلف المساحات.
+        </div>
+
+        <div class="info-card" style="border-right-color: #2e7d32;">
+            <b>👥 تنوع الاختصاص:</b> 
+            لدينا كادر مختص من <b>(الإناث والذكور)</b>، موزعين حسب نوع الخدمة (تنظيف منزلي، حدائق، مطاعم، أو مكاتب) لتقديم الحل الأمثل لكل مهمة.
+        </div>
+
+        <p style="font-size: 12px; color: #888; margin-top: 15px;">
+            * ملاحظة: يتم اختيار الكادر (ذكر/أنثى) بناءً على طبيعة الخدمة المطلوبة واحتياجاتكم الخاصة.
+        </p>
+    </div>
+</div>
+
+
+
+        <div id="contact" class="tab-content">
+
+            <div class="card">
+
+                <h2>تواصل معنا</h2>
+                <h2>نســمة تـهتم بك وتسعى لتقـديم خدمة آمنه وذات جودة عالية  أمانك هو أولويتنا </h2>
+
+                <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
+
+                <p style="margin-top: 15px;">📧 Email: info@nesmajo.com</p>
+
+            </div>
+
+        </div>
+
+
+
+        <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
+
     </div>
 
 
@@ -106,3 +456,29 @@
         evt.currentTarget.className += " active";
     }
 </script>
+    // دالة إغلاق نافذة الأمان
+function closeTrustModal() {
+    document.getElementById('trustModal').style.display = 'none';
+}
+
+// تعديل بسيط على دالة window.onload الحالية لدمج تشغيل النافذة
+window.onload = function() {
+    restoreData();
+    
+    // إخفاء الـ Splash ثم إظهار نافذة الأمان
+    setTimeout(function() {
+        const splash = document.getElementById('splash');
+        if(splash) {
+            splash.style.transition = "0.8s";
+            splash.style.opacity = "0";
+            setTimeout(() => { 
+                splash.style.display = 'none';
+                // إظهار نافذة الأمان بعد اختفاء السبلّاش مباشرة
+                document.getElementById('trustModal').style.display = 'flex';
+            }, 800);
+        }
+    }, 1500);
+};
+</body>
+
+</html>
