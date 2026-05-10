@@ -3,103 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم نسمة | الإدارة 📊</title>
+    <title>لوحة تحكم نسمة | الإدارة والخريطة 📊</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
+        :root { --nesma-green: #2e7d32; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        .header { background: #2e7d32; color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .stats-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; border-top: 5px solid #2e7d32; }
+        
+        .header { background: var(--nesma-green); color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* تنسيق الخريطة */
+        .map-card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 25px; border: 2px solid var(--nesma-green); }
+        #map { height: 400px; width: 100%; border-radius: 10px; }
+
+        .stats-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; border-top: 5px solid var(--nesma-green); }
+        
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         th, td { padding: 15px; text-align: right; border-bottom: 1px solid #eee; }
-        th { background: #2e7d32; color: white; font-weight: bold; }
+        th { background: var(--nesma-green); color: white; }
         tr:hover { background-color: #f1f8e9; }
+        
         .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #e3f2fd; color: #1976d2; }
-        .btn-map { background: #00c853; color: white; padding: 8px 15px; text-decoration: none; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; }
-        .btn-map:hover { background: #00e676; transform: translateY(-2px); }
-        .supplies-list { font-size: 13px; color: #555; background: #f9f9f9; padding: 5px 10px; border-radius: 5px; border-right: 3px solid #81c784; }
-        .duration-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 5px; font-weight: bold; font-size: 13px; }
+        .btn-map { background: #00c853; color: white; padding: 8px 15px; text-decoration: none; border-radius: 8px; font-size: 13px; }
     </style>
 </head>
 <body>
-<div class="card" style="margin-bottom: 20px; padding: 10px;">
-    <h3 style="color: #2e7d32; margin-top: 0;">📍 خريطة التوزيع الجغرافي لليوم</h3>
-    <div id="map" style="height: 400px; width: 100%; border-radius: 10px; border: 2px solid #2e7d32;"></div>
-</div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-    // إعداد الخريطة ومركزها (عمان، الأردن)
-    var map = L.map('map').setView([31.9454, 35.9284], 11); 
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // إضافة النقاط برمجياً من بيانات الحجوزات
-    {% for b in bookings %}
-        {% if b.location and b.location.lat and b.location.lon %}
-            var marker = L.marker([{{ b.location.lat }}, {{ b.location.lon }}]).addTo(map);
-            marker.bindPopup("<b>الزبون: {{ b.name }}</b><br>العاملة: {{ b.cleaner }}<br>الموعد: {{ b.time }}");
-        {% endif %}
-    {% endfor %}
-</script>
     <div class="header">
-        <h1>إجمالي الحجوزات المستلمة</h1>
-        <a href="/admin-logout" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 5px 15px; border-radius: 10px;">تسجيل الخروج</a>
+        <h1>لوحة تحكم نسمة - الإدارة</h1>
+        <a href="{{ url_for('logout') }}" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 5px 15px; border-radius: 10px;">تسجيل الخروج</a>
+    </div>
+
+    <div class="map-card">
+        <h3 style="color: var(--nesma-green); margin-top: 0;">📍 خريطة التوزيع الجغرافي لليوم</h3>
+        <div id="map"></div>
     </div>
 
     <div class="stats-card">
-        <h2 style="margin: 0; color: #2e7d32;">{{ bookings|length }}</h2>
-        <p style="margin: 5px 0 0 0; color: #666;">حجز نشط</p>
+        <h2 style="margin: 0; color: var(--nesma-green);">{{ bookings|length }}</h2>
+        <p style="margin: 5px 0 0 0; color: #666;">حجز نشط في النظام</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>الاسم</th>
+                <th>الزبون</th>
                 <th>الهاتف</th>
                 <th>العاملة</th>
-                <th>مدة الخدمة</th>
                 <th>الموعد</th>
-                <th>المستلزمات الإضافية</th> 
-                <th>الموقع</th>
                 <th>الحالة</th>
+                <th>الموقع</th>
             </tr>
         </thead>
         <tbody>
             {% for b in bookings %}
             <tr>
-                <td style="font-weight: bold;">{{ b.name }}</td>
-                <td>{{ b.phone }}</td>
-                <td>{{ b.cleaner }}</td>
+                <td style="font-weight: bold;">{{ b.customer.full_name }}</td>
+                <td>{{ b.customer.phone }}</td>
+                <td>{{ b.assigned_worker.name if b.assigned_worker else "لم تحدد" }}</td>
+                <td>{{ b.date }} | {{ b.time }}</td>
+                <td><span class="status-badge">{{ b.status }}</span></td>
                 <td>
-                    <span class="duration-badge">{{ b.duration if b.duration else "غير محدد" }}</span>
-                </td>
-                <td>{{ b.date }} <span style="color: #888;">| {{ b.time }}</span></td>
-                <td>
-                    <div class="supplies-list">
-                        {{ b.extra_supplies if b.extra_supplies else "لا يوجد" }}
-                    </div>
-                </td>
-                <td>
-                    {% if b.map_url != "غير محدد" %}
-                    <a href="{{ b.map_url }}" target="_blank" class="btn-map">
-                        📍 فتح الموقع
-                    </a>
+                    {% if b.lat and b.lon %}
+                    <a href="https://www.google.com/maps?q={{ b.lat }},{{ b.lon }}" target="_blank" class="btn-map">📍 فتح الموقع</a>
                     {% else %}
                     <span style="color: #ccc;">غير محدد</span>
                     {% endif %}
                 </td>
-                <td><span class="status-badge">{{ b.status }}</span></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <footer style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
-        Nesmajo © 2026 - نظام إدارة الحجوزات الذكي
-    </footer>
+    <script>
+        // إعداد الخريطة ومركزها (عمان، الأردن)
+        var map = L.map('map').setView([31.9454, 35.9284], 11); 
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // إضافة النقاط من قاعدة البيانات الجديدة
+        {% for b in bookings %}
+            {% if b.lat and b.lon %}
+                var marker = L.marker([{{ b.lat }}, {{ b.lon }}]).addTo(map);
+                marker.bindPopup("<b>الزبون: {{ b.customer.full_name }}</b><br>الموعد: {{ b.time }}<br>الحالة: {{ b.status }}");
+            {% endif %}
+        {% endfor %}
+    </script>
 
 </body>
 </html>
