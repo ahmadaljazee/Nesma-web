@@ -40,15 +40,6 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
 .extras-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 </style> </head>
     
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('status') === 'success') {
-     // هنا يمكنك إظهار أي نافذة تصميم (Modal) أو تنبيه أنيق
-    alert("✅ تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
-    // تنظيف الرابط لإزالة كلمة success
-    window.history.replaceState({}, document.title, "/");}
-</script>
-    
 <body>
     <div id="trustModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
     <div class="card" style="max-width: 300px; border: none; position: relative; padding: 30px 20px;">
@@ -62,8 +53,6 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
     <img src="/static/logo.png" style="width:150px; animation: pulse 1.5s infinite;">
 </div>
 
-
-
     <div class="tabs-header">
         <button class="tab-btn active" onclick="openTab(event, 'main')">الرئيسية</button>
         <button class="tab-btn" onclick="openTab(event, 'about')">من نحن</button>
@@ -76,19 +65,19 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
         <div id="main" class="tab-content active">
         <div class="card">
         <h1>احجز نسمة الآن</h1>
-<form action="/save_booking" method="POST" id="bookingForm" onsubmit="setTimeout(() => { this.reset(); }, 500);">
+<form action="/save_booking" method="POST" id="bookingForm">
 <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
 <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
     
 <select name="cleaner">
-  <option >اختيار العاملة - اختياري -</option>
+  <option value="">اختيار العاملة - اختياري -</option>
   <option>سناء م. ⭐ 4.9</option>
   <option>أمل ع. ⭐ 4.7</option>
   <option>ريم س. ⭐ 4.8</option>
 </select>
     
-<select name="duration" >
-   <option>⏱️ اختر نوع الخدمـة</option>
+<select name="duration" required>
+   <option value="">⏱️ اختر نوع الخدمـة</option>
    <option> خدمة منزلية سريعة (4 ساعات)</option>
    <option> خدمة منزلية كاملة (6 ساعات)</option>
    <option>  خدمة تنظيف للمكاتب والشركات</option>
@@ -141,72 +130,28 @@ required style="flex: 1;">
 <div class="info-card"> <b>🌳 الحدائق والمساحات الخارجية:</b> خدمات تنظيف وتنسيق الحدائق المنزلية لتستمتع بجلسات خارجية نقية.</div>
 <div class="info-card"> <b>🏢 الشركات والشقق الفندقية:</b>تنظيف دوري للمكاتب، وتجهيز الشقق المفروشة والفندقية بأعلى المعايير. </div>
 <div class="info-card"> <b>🍴 المطاعم والمنشآت الغذائية:</b>تنظيف احترافي يومي يشمل الصالات والمطابخ وإزالة الزيوت والشحوم لضمان بيئة صحية.</div></div></div>
+
 <div id="staff" class="tab-content">
 <div class="card">
 <h2 style="color: var(--main-green); margin-bottom: 20px;">كادر نسمة.. أمان وخبرة</h2>
-<p style="font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 20px;">نحن في "نسمة" لا نختار كادرنا عشوائياً، بل نخضع كل فرد في فريقنا لمعايير قبول صارمة لضمان راحة بالكم:</p>
-<div class="info-card" style="border-right-color: #2e7d32;"><b>🔒 السجل الأمني:</b> جميع أفراد كادرنا حاصلون على شهادة "عدم محكومية" رسمية تثبت نظافة سجلهم الأمني.</div>
-<div class="info-card" style="border-right-color: #2e7d32;">
-            <b>🏥 المعايير الصحية:</b> 
-            يخضع كادرنا لفحوصات طبية دورية معتمدة (شهادة خلو أمراض) لضمان أعلى مستويات السلامة العامة.
-        </div>
-
-        <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>🎓 التأهيل والخبرة:</b> 
-            كادرنا مدرب على أحدث تقنيات التنظيف والتعقيم، مع خبرة عملية لا تقل عن 3 سنوات في التعامل مع مختلف المساحات.
-        </div>
-
-        <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>👥 تنوع الاختصاص:</b> 
-            لدينا كادر مختص من <b>(الإناث والذكور)</b>، موزعين حسب نوع الخدمة (تنظيف منزلي، حدائق، مطاعم، أو مكاتب) لتقديم الحل الأمثل لكل مهمة.
-        </div>
-
-        <p style="font-size: 12px; color: #888; margin-top: 15px;">
-            * ملاحظة: يتم اختيار الكادر (ذكر/أنثى) بناءً على طبيعة الخدمة المطلوبة واحتياجاتكم الخاصة.
-        </p>
-    </div>
+<div class="info-card"><b>🔒 السجل الأمني:</b> جميع أفراد كادرنا حاصلون على شهادة "عدم محكومية" رسمية.</div>
+<div class="info-card"><b>🏥 المعايير الصحية:</b> يخضع كادرنا لفحوصات طبية دورية معتمدة.</div>
+<div class="info-card"><b>🎓 التأهيل والخبرة:</b> كادر مدرب بخبرة لا تقل عن 3 سنوات.</div>
+</div>
 </div>
 
+<div id="contact" class="tab-content">
+<div class="card">
+    <h2>تواصل معنا</h2>
+    <p>نســمة تـهتم بك وتسعى لتقـديم خدمة آمنه وذات جودة عالية</p>
+    <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
+    <p style="margin-top: 15px;">📧 Email: info@nesmajo.com</p>
+</div>
+</div>
 
+<p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
 
-        <div id="contact" class="tab-content">
-
-            <div class="card">
-
-                <h2>تواصل معنا</h2>
-                <h2>نســمة تـهتم بك وتسعى لتقـديم خدمة آمنه وذات جودة عالية  أمانك هو أولويتنا </h2>
-
-                <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
-
-                <p style="margin-top: 15px;">📧 Email: info@nesmajo.com</p>
-
-            </div>
-
-        </div>
-
-
-
-        <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
-
-        <script>
-            window.onload = function() {
-    // تفريغ الفورم إجبارياً عند تحميل الصفحة
-    const form = document.getElementById('bookingForm');
-    if(form) form.reset();
-    
-    // مسح الذاكرة المؤقتة للمتصفح (localStorage)
-    localStorage.clear();
-
-    // بقية كود السبلّاش (Splash Screen) كما هو...
-    setTimeout(function() {
-        const splash = document.getElementById('splash');
-        if(splash) {
-            splash.style.transition = "0.8s";
-            splash.style.opacity = "0";
-            setTimeout(() => { splash.style.display = 'none'; }, 800);
-        }
-    }, 1500);
-};
+<script>
     // 1. دالة التبويبات
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
@@ -246,10 +191,13 @@ required style="flex: 1;">
         });
     }
 
-    // 4. الدالة الشاملة عند تحميل الصفحة (السبلّاش + الأمان + الاستعادة)
+    // 4. الدالة الشاملة عند تحميل الصفحة (تفريغ الحقول + السبلّاش + الأمان + الاستعادة)
     window.onload = function() {
-        restoreData();
-        
+        // تفريغ الفورم إجبارياً عند تحميل الصفحة لأول مرة
+        const form = document.getElementById('bookingForm');
+        if(form) form.reset();
+        localStorage.clear();
+
         // إخفاء السبلّاش ثم إظهار نافذة الأمان
         setTimeout(function() {
             const splash = document.getElementById('splash');
@@ -263,6 +211,13 @@ required style="flex: 1;">
                 }, 800);
             }
         }, 1500);
+
+        // التحقق من حالة النجاح في الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('status') === 'success') {
+            alert("✅ تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
+            window.history.replaceState({}, document.title, "/");
+        }
     };
 
     // 5. دالة تحديد الموقع
@@ -281,11 +236,24 @@ required style="flex: 1;">
         }
     }
 
-    // مراقبة الحقول وتجهيز الفورم
+    // 6. مراقبة الحقول وتجهيز الفورم
     document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', saveData));
-    document.querySelector('form').onsubmit = function() {
-        setTimeout(() => localStorage.clear(), 1000);
-    };
+    
+    const bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.onsubmit = function() {
+            // تفريغ الذاكرة والحقول بعد الإرسال بـ 500 ملي ثانية
+            setTimeout(() => { 
+                localStorage.clear();
+                this.reset();
+                const gpsLabel = document.getElementById("gpsLabel");
+                if(gpsLabel) {
+                    gpsLabel.innerText = "📍 اضغط لتحديد الموقع";
+                    gpsLabel.style.color = "var(--main-green)";
+                }
+            }, 500);
+        };
+    }
 </script>
 </body>
 </html>
