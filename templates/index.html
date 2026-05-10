@@ -703,100 +703,8 @@
 
         <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
 
-    </div>
-
-
-
-
-<script>
-    // 1. وظيفة حفظ البيانات تلقائياً عند الكتابة
-    function saveData() {
-        const fields = ['name', 'phone', 'cleaner', 'date', 'time'];
-        fields.forEach(field => {
-            const element = document.querySelector(`[name="${field}"]`);
-            if (element) {
-                localStorage.setItem('temp_' + field, element.value);
-            }
-        });
-    }
-
-    // 2. وظيفة استعادة البيانات عند تحميل الصفحة
-    function restoreData() {
-        const fields = ['name', 'phone', 'cleaner', 'date', 'time'];
-        fields.forEach(field => {
-            const savedValue = localStorage.getItem('temp_' + field);
-            const element = document.querySelector(`[name="${field}"]`);
-            if (savedValue && element) {
-                element.value = savedValue;
-            }
-        });
-    }
-
-    // تشغيل استعادة البيانات بمجرد تحميل الصفحة
-    window.onload = function() {
-        restoreData();
-        
-        // إخفاء شاشة الترحيب
-        setTimeout(function() {
-            const splash = document.getElementById('splash');
-            if(splash) {
-                splash.style.transition = "0.8s";
-                splash.style.opacity = "0";
-                setTimeout(() => { splash.style.display = 'none'; }, 800);
-            }
-        }, 1500);
-    };
-
-    // إضافة "مراقب" لكل الحقول لحفظ البيانات فور تغييرها
-    document.querySelectorAll('input, select').forEach(element => {
-        element.addEventListener('input', saveData);
-    });
-
-    // 3. دالة تحديد الموقع المحسنة (لا تسبب ريفريش)
-    function getLocation() {
-        const btn = document.getElementById("gpsLabel");
-        if (navigator.geolocation) {
-            btn.innerText = "⏳ جاري التحديد (يرجى الانتظار)...";
-            
-            const options = {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            };
-
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    document.getElementById("lat").value = pos.coords.latitude;
-                    document.getElementById("lon").value = pos.coords.longitude;
-                    btn.innerText = "✅ تم تحديد موقعك";
-                    btn.style.color = "#00c853";
-                    // حفظ الموقع أيضاً في حال حدث ريفريش لاحقاً
-                    localStorage.setItem('temp_lat', pos.coords.latitude);
-                    localStorage.setItem('temp_lon', pos.coords.longitude);
-                }, 
-                (err) => {
-                    if (err.code === 1) {
-                        btn.innerText = "❌ يرجى السماح بصلاحية الموقع";
-                    } else {
-                        btn.innerText = "❌ فشل التحديد، حاول مرة أخرى";
-                    }
-                }, 
-                options
-            );
-        }
-    }
-
-    // تنظيف البيانات بعد إرسال النموذج بنجاح
-    document.querySelector('form').onsubmit = function() {
-        // نترك البيانات قليلاً لضمان وصولها ثم نمسحها
-        setTimeout(() => localStorage.clear(), 1000);
-    };
-    // ... نهاية الكود السابق
-    document.querySelector('form').onsubmit = function() {
-        setTimeout(() => localStorage.clear(), 1000);
-    };
-
-    // دالة التبويبات يجب أن تكون هنا داخل السكريبت
+   <script>
+    // 1. دالة التبويبات (لإصلاح مشكلة الأزرار العلوية)
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tab-content");
@@ -810,29 +718,73 @@
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
     }
-    // دالة إغلاق نافذة الأمان
-function closeTrustModal() {
-    document.getElementById('trustModal').style.display = 'none';
-}
 
-// تعديل بسيط على دالة window.onload الحالية لدمج تشغيل النافذة
-window.onload = function() {
-    restoreData();
-    
-    // إخفاء الـ Splash ثم إظهار نافذة الأمان
-    setTimeout(function() {
-        const splash = document.getElementById('splash');
-        if(splash) {
-            splash.style.transition = "0.8s";
-            splash.style.opacity = "0";
-            setTimeout(() => { 
-                splash.style.display = 'none';
-                // إظهار نافذة الأمان بعد اختفاء السبلّاش مباشرة
-                document.getElementById('trustModal').style.display = 'flex';
-            }, 800);
+    // 2. دالة إغلاق نافذة الأمان
+    function closeTrustModal() {
+        var modal = document.getElementById('trustModal');
+        if(modal) modal.style.display = 'none';
+    }
+
+    // 3. الدالة الشاملة عند تحميل الصفحة
+    window.onload = function() {
+        // استعادة البيانات المخزنة
+        if (typeof restoreData === "function") restoreData();
+        
+        // إخفاء اللوجو ثم إظهار نافذة الأمان
+        setTimeout(function() {
+            var splash = document.getElementById('splash');
+            if(splash) {
+                splash.style.transition = "0.8s";
+                splash.style.opacity = "0";
+                setTimeout(function() { 
+                    splash.style.display = 'none'; 
+                    var trust = document.getElementById('trustModal');
+                    if(trust) trust.style.display = 'flex';
+                }, 800);
+            }
+        }, 1500);
+    };
+
+    // 4. حفظ واستعادة البيانات
+    function saveData() {
+        const fields = ['name', 'phone', 'cleaner', 'date', 'time', 'duration'];
+        fields.forEach(field => {
+            const element = document.querySelector(`[name="${field}"]`);
+            if (element) localStorage.setItem('temp_' + field, element.value);
+        });
+    }
+
+    function restoreData() {
+        const fields = ['name', 'phone', 'cleaner', 'date', 'time', 'duration'];
+        fields.forEach(field => {
+            const savedValue = localStorage.getItem('temp_' + field);
+            const element = document.querySelector(`[name="${field}"]`);
+            if (savedValue && element) element.value = savedValue;
+        });
+    }
+
+    // 5. تحديد الموقع
+    function getLocation() {
+        const btn = document.getElementById("gpsLabel");
+        if (navigator.geolocation) {
+            btn.innerText = "⏳ جاري التحديد...";
+            navigator.geolocation.getCurrentPosition((pos) => {
+                document.getElementById("lat").value = pos.coords.latitude;
+                document.getElementById("lon").value = pos.coords.longitude;
+                btn.innerText = "✅ تم تحديد موقعك";
+                btn.style.color = "#00c853";
+            }, (err) => {
+                btn.innerText = "❌ يرجى تفعيل الموقع";
+            }, {enableHighAccuracy: true});
         }
-    }, 1500);
-};
+    }
+
+    // مراقبة الحقول وتجهيز الفورم
+    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', saveData));
+    document.querySelector('form').onsubmit = function() {
+        setTimeout(() => localStorage.clear(), 1000);
+    };
+</script>
 </body>
 
 </html>
