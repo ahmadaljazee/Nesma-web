@@ -6,13 +6,17 @@ import os
 app = Flask(__name__)
 app.secret_key = "NESMA_SECRET_KEY_2026"
 
-# الربط مع قاعدة بيانات رندر عبر المتغير البيئي DATABASE_URL
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+# --- تصحيح رابط قاعدة البيانات لرندر ---
+uri = os.environ.get("DATABASE_URL")
+if uri and uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# تعريف الجدول (هذا الجزء هو الذي سيحل مشكلة UndefinedTable)
+# --- تعريف الجدول (هذا الجزء هو الذي سيحل مشكلة UndefinedTable) ---
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +42,10 @@ def index():
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
-        # استلام البيانات من الفورم
+        lat = request.form.get('lat')
+        lon = request.form.get('lon')
+        extras = request.form.getlist('extra')
+        
         new_booking = Booking(
             name=request.form.get('name'),
             phone=request.form.get('phone'),
@@ -46,10 +53,10 @@ def save_booking():
             duration=request.form.get('duration'),
             date=request.form.get('date'),
             time=request.form.get('time'),
-            extra_supplies=", ".join(request.form.getlist('extra')) or "لا يوجد",
-            lat=request.form.get('lat'),
-            lon=request.form.get('lon'),
-            map_url=f"https://www.google.com/maps?q={request.form.get('lat')},{request.form.get('lon')}"
+            extra_supplies=", ".join(extras) if extras else "لا يوجد",
+            lat=lat,
+            lon=lon,
+            map_url=f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
         )
         db.session.add(new_booking)
         db.session.commit()
@@ -58,16 +65,28 @@ def save_booking():
         db.session.rollback()
         return f"حدث خطأ أثناء الحفظ: {e}"
 
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        if request.form.get('password') == ADMIN_PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('admin_dashboard'))
+        return "كلمة مرور خاطئة!"
+    return '''<div style="text-align:center; margin-top:100px; direction:rtl;"><h2>دخول المدير</h2><form method="post"><input type="password" name="password"><button type="submit">دخول</button></form></div>'''
+
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('logged_in'): return redirect(url_for('admin_login'))
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
     return render_template('admin.html', bookings=bookings)
 
-# ... (باقي المسارات admin-login و admin-logout تبقى كما هي)
+@app.route('/admin-logout')
+def admin_logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all() # هذا السطر هو "السحر" الذي سيقوم بإنشاء الجدول المفقود
+        db.create_all() # هذا السطر هو الذي سيبني الجدولbookings تلقائياً
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
