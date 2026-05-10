@@ -84,6 +84,13 @@
     {% for b in bookings %}{% if b.lat and b.lon %}
         L.marker([{{ b.lat }}, {{ b.lon }}]).addTo(map).bindPopup("<b>{{ b.name }}</b>");
     {% endif %}{% endfor %}
+    // إضافة النقاط برمجياً من بيانات الحجوزات
+    {% for b in bookings %}
+        {% if b.location and b.location.lat and b.location.lon %}
+            var marker = L.marker([{{ b.location.lat }}, {{ b.location.lon }}]).addTo(map);
+            marker.bindPopup("<b>الزبون: {{ b.name }}</b><br>العاملة: {{ b.cleaner }}<br>الموعد: {{ b.time }}");
+        {% endif %}
+    {% endfor %}
 </script>
 
 </body>
