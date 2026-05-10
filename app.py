@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import os
@@ -7,13 +7,13 @@ app = Flask(__name__)
 app.secret_key = "NESMA_SECRET_KEY_2026"
 
 # --- إعداد قاعدة البيانات PostgreSQL (Render) ---
-# التأكد من تعديل postgres:// إلى postgresql:// في إعدادات Render
+# سيقوم التطبيق بجلب الرابط تلقائياً من الإعدادات التي أظهرتها في الصورة
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- تعريف نموذج قاعدة البيانات (نفس حقول الفايربيس تماماً) ---
+# --- تعريف نموذج البيانات (مطابق تماماً لهيكل حجوزاتك السابق) ---
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
@@ -31,17 +31,17 @@ class Booking(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 # --- إعدادات المدير ---
-ADMIN_PASSWORD = "123"
+# جلب كلمة المرور من إعدادات رندر كما في الصورة
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123") 
 
-# --- 1. واجهة الزبائن الرئيسية ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# --- 2. مسار الحجز المطور (نفس منطق عملك السابق) ---
 @app.route('/save_booking', methods=['POST'])
 def save_booking():
     try:
+        # استلام البيانات بنفس المسميات في الكود الأصلي
         name = request.form.get('name')
         phone = request.form.get('phone')
         cleaner = request.form.get('cleaner')
@@ -56,7 +56,7 @@ def save_booking():
 
         map_link = f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
 
-        # حفظ البيانات في PostgreSQL بدلاً من Firestore
+        # حفظ البيانات في PostgreSQL (Render)
         new_booking = Booking(
             name=name,
             phone=phone,
@@ -79,7 +79,6 @@ def save_booking():
         db.session.rollback()
         return f"حدث خطأ أثناء الحفظ في القاعدة الجديدة: {e}"
 
-# --- 3. لوحة التحكم (الدخول) ---
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -98,25 +97,22 @@ def admin_login():
         </div>
     '''
 
-# --- 4. لوحة التحكم (عرض البيانات) ---
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('logged_in'):
         return redirect(url_for('admin_login'))
     
-    # جلب البيانات مرتبة من الأحدث إلى الأقدم
+    # جلب البيانات مرتبة من الأحدث إلى الأقدم لعرضها في الجدول
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
-    
     return render_template('admin.html', bookings=bookings)
 
-# --- 5. تسجيل الخروج ---
 @app.route('/admin-logout')
 def admin_logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # إنشاء الجداول تلقائياً في Render عند التشغيل لأول مرة
+    # إنشاء الجداول تلقائياً في قاعدة بيانات رندر عند التشغيل
     with app.app_context():
         db.create_all()
     port = int(os.environ.get('PORT', 5000))
