@@ -86,6 +86,50 @@ def admin_logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
+import pandas as pd
+from io import BytesIO
+from flask import send_file
+
+@app.route('/download-excel')
+def download_excel():
+    if not session.get('logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    # جلب جميع الحجوزات من القاعدة
+    bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
+    
+    # تحويل البيانات إلى قائمة مرتبة
+    data = []
+    for b in bookings:
+        data.append({
+            "الاسم": b.name,
+            "الهاتف": b.phone,
+            "العاملة": b.cleaner,
+            "نوع الخدمة": b.duration,
+            "التاريخ": b.date,
+            "الوقت": b.time,
+            "المستلزمات": b.extra_supplies,
+            "رابط الموقع": b.map_url,
+            "الحالة": b.status,
+            "وقت الطلب": b.timestamp
+        })
+    
+    # تحويل القائمة إلى ملف إكسل باستخدام Pandas
+    df = pd.DataFrame(data)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Hajoozat_Nesma')
+    
+    output.seek(0)
+    
+    # إرسال الملف للمتصفح للتحميل
+    return send_file(
+        output, 
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True, 
+        download_name=f'Nesma_Bookings_{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx'
+    )
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
