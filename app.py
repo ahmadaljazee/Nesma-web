@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "NESMA_SECRET_KEY_2026"
 
-# --- 1. تصحيح الرابط (لضمان التوافق مع SQLAlchemy) ---
+# --- تصحيح رابط قاعدة البيانات (لحل مشكلة SQLAlchemy مع Render) ---
 uri = os.environ.get("DATABASE_URL")
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- 2. تعريف الجدول ---
+# --- تعريف الجدول (لبناء المخزن تلقائياً) ---
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
@@ -33,11 +33,11 @@ class Booking(db.Model):
     status = db.Column(db.String(50), default='جديد')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-# --- 3. إنشاء الجداول (هذا هو المكان الصحيح ليعمل على رندر) ---
+# --- إنشاء الجداول (هذا السطر سيحل مشكلة UndefinedTable فوراً) ---
 with app.app_context():
     db.create_all()
-    print("✅ تم التأكد من وجود الجداول بنجاح!")
 
+# جلب كلمة السر من إعدادات رندر (الصورة التي أرسلتها)
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123")
 
 @app.route('/')
@@ -66,13 +66,25 @@ def save_booking():
         db.session.rollback()
         return f"حدث خطأ أثناء الحفظ: {e}"
 
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        if request.form.get('password') == ADMIN_PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('admin_dashboard'))
+        return "كلمة مرور خاطئة!"
+    return '''<div style="text-align:center; margin-top:100px; direction:rtl;"><h2>دخول المدير</h2><form method="post"><input type="password" name="password" placeholder="كلمة المرور"><button type="submit">دخول</button></form></div>'''
+
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('logged_in'): return redirect(url_for('admin_login'))
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
     return render_template('admin.html', bookings=bookings)
 
-# ... (باقي المسارات admin-login و admin-logout تبقى كما هي)
+@app.route('/admin-logout')
+def admin_logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
