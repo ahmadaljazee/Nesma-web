@@ -47,7 +47,7 @@
             <th>الاسم</th>
             <th>الهاتف</th>
             <th>العاملة</th>
-            <th>مدة الخدمة</th>
+            <th>نوع الخدمة</th>
             <th>الموعد</th>
             <th>المستلزمات </th>
             <th>الموقع</th>
@@ -60,7 +60,7 @@
             <td style="font-weight: bold;">{{ b.name }}</td>
             <td>{{ b.phone }}</td>
             <td>{{ b.cleaner }}</td>
-            <td><span class="duration-badge">{{ b.duration }}</span></td>
+            <td><span class="duration ">{{ b.duration }}</span></td>
             <td>{{ b.date }} <span style="color: #888;">| {{ b.time }}</span></td>
             <td><div class="supplies-list">{{ b.extra_supplies }}</div></td>
             <td>
