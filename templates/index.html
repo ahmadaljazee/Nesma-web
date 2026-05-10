@@ -99,7 +99,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
         // هنا يمكنك إظهار أي نافذة تصميم (Modal) أو تنبيه أنيق
-        alert("? تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
+        alert("✅ تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
         // تنظيف الرابط لإزالة كلمة success
         window.history.replaceState({}, document.title, "/");
     }
@@ -107,7 +107,7 @@
 <body>
     <div id="trustModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
     <div class="card" style="max-width: 300px; border: none; position: relative; padding: 30px 20px;">
-        <div style="font-size: 50px; margin-bottom: 15px;">???</div>
+        <div style="font-size: 50px; margin-bottom: 15px;">🛡️</div>
         <h3 style="color: var(--main-green); margin: 0 0 10px 0;">أمانكم أولويتنا</h3>
         <p style="font-size: 14px; line-height: 1.6; color: #555;">
             نود طمأنتكم بأن جميع كوادرنا خضعوا لـ <b>فحوصات طبية معتمدة</b> ولديهم <b>سجلات أمنية نظيفة</b> لضمان تقديم خدمة آمنة وموثوقة.
@@ -158,35 +158,35 @@
 
                 <form action="/save_booking" method="POST">
 
-                    <input type="text" name="name" placeholder="?? الاسم الكامل" required>
+                    <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
 
-                    <input type="tel" name="phone" placeholder="?? رقم الجوال" required>
+                    <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
 
                     <select name="cleaner">
 
                         <option value="">اختيار العاملة - اختياري -</option>
 
-                        <option>سناء م. ? 4.9</option>
+                        <option>سناء م. ⭐ 4.9</option>
 
-                        <option>أمل ع. ? 4.7</option>
+                        <option>أمل ع. ⭐ 4.7</option>
 
-                        <option>ريم س. ? 4.8</option>
+                        <option>ريم س. ⭐ 4.8</option>
 
                     </select>
                     <select name="duration" required onchange="saveData()">
-    <option value="">?? اختر مدة الخدمة</option>
+    <option value="">⏱️ اختر مدة الخدمة</option>
     <option value="4 ساعات">خدمة سريعة (4 ساعات)</option>
     <option value="6 ساعات">خدمة كاملة (6 ساعات)</option>
 </select>
 
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-    <input type="text" name="date" placeholder="?? اختر تاريخ الحجز" 
+    <input type="text" name="date" placeholder="📅 اختر تاريخ الحجز" 
            onfocus="this.type='date'; try{this.showPicker();}catch(e){}" 
            onclick="try{this.showPicker();}catch(e){}"
            onblur="(this.value=='' ? this.type='text' : this.type='date')" 
            required style="flex: 1;">
 
-    <input type="text" name="time" placeholder="? اختر ساعة البدء" 
+    <input type="text" name="time" placeholder="⏰ اختر ساعة البدء" 
            onfocus="this.type='time'; try{this.showPicker();}catch(e){}" 
            onclick="try{this.showPicker();}catch(e){}"
            onblur="(this.value=='' ? this.type='text' : this.type='time')" 
@@ -197,7 +197,7 @@
 
                     <div class="extras-container">
 
-                        <p style="font-weight: bold; margin: 0; color: var(--main-green);">?? مستلزمات إضافية مطلوبة:</p>
+                        <p style="font-weight: bold; margin: 0; color: var(--main-green);">📦 مستلزمات إضافية مطلوبة:</p>
 
                         <div class="extras-grid">
 
@@ -219,9 +219,9 @@
 
                     <input type="hidden" name="lon" id="lon">
 
-                    <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">?? اضغط لتحديد الموقع</div>
+                    <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
 
-                    <button type="submit" class="submit-btn">? تأكيد طلب الحجز</button>
+                    <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
 
                 </form>
 
@@ -251,11 +251,11 @@
 
                 <div style="text-align: right;">
 
-                    <div class="info-card"><b>??? الرعاية:</b> نحن لا نقوم فقط بالتنظيف لمنزلك، وإنما نعتني به بأيدي أمينة تقدر قيمة التفاصيل لنوفر لك بيئة مريحة تليق بك وبعائلتك.</div>
+                    <div class="info-card"><b>🛡️ الرعاية:</b> نحن لا نقوم فقط بالتنظيف لمنزلك، وإنما نعتني به بأيدي أمينة تقدر قيمة التفاصيل لنوفر لك بيئة مريحة تليق بك وبعائلتك.</div>
 
-                    <div class="info-card"><b>? الجودة:</b> نضع بين يديك خبرة احترافية ومعايير دقيقة، فكل خدمة نقدمها هي بصمة إتقان تضمن لك الحصول على أفضل النتائج في كل زيارة.</div>
+                    <div class="info-card"><b>⭐ الجودة:</b> نضع بين يديك خبرة احترافية ومعايير دقيقة، فكل خدمة نقدمها هي بصمة إتقان تضمن لك الحصول على أفضل النتائج في كل زيارة.</div>
 
-                    <div class="info-card"><b>?? الأمان:</b> أمان عائلتك هو الورقة الأهم في عهدنا، فنحن نختار فريقنا بعناية فائقة مع سجلات طبية وأمنية موثوقة لتستمتع بخدماتنا وأنت مطمئن البال.</div>
+                    <div class="info-card"><b>🔒 الأمان:</b> أمان عائلتك هو الورقة الأهم في عهدنا، فنحن نختار فريقنا بعناية فائقة مع سجلات طبية وأمنية موثوقة لتستمتع بخدماتنا وأنت مطمئن البال.</div>
 
                 </div>
 
@@ -270,22 +270,22 @@
         <h2 style="color: var(--main-green); margin-bottom: 20px;">خدمات نسمة الشاملة</h2>
         
         <div class="info-card">
-            <b>?? رعاية المنازل:</b> 
+            <b>🏠 رعاية المنازل:</b> 
             تنظيف عميق للمطابخ والحمامات، ترتيب الغرف، وتنظيف ما بعد البناء والتشطيب للمباني الجديدة.
         </div>
 
         <div class="info-card">
-            <b>?? الحدائق والمساحات الخارجية:</b> 
+            <b>🌳 الحدائق والمساحات الخارجية:</b> 
             خدمات تنظيف وتنسيق الحدائق المنزلية لتستمتع بجلسات خارجية نقية.
         </div>
 
         <div class="info-card">
-            <b>?? الشركات والشقق الفندقية:</b> 
+            <b>🏢 الشركات والشقق الفندقية:</b> 
             تنظيف دوري للمكاتب، وتجهيز الشقق المفروشة والفندقية بأعلى المعايير.
         </div>
 
         <div class="info-card">
-            <b>?? المطاعم والمنشآت الغذائية:</b> 
+            <b>🍴 المطاعم والمنشآت الغذائية:</b> 
             تنظيف احترافي يومي يشمل الصالات والمطابخ وإزالة الزيوت والشحوم لضمان بيئة صحية.
         </div>
     </div>
@@ -302,22 +302,22 @@
         </p>
 
         <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>?? السجل الأمني:</b> 
+            <b>🔒 السجل الأمني:</b> 
             جميع أفراد كادرنا حاصلون على شهادة "عدم محكومية" رسمية تثبت نظافة سجلهم الأمني.
         </div>
 
         <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>?? المعايير الصحية:</b> 
+            <b>🏥 المعايير الصحية:</b> 
             يخضع كادرنا لفحوصات طبية دورية معتمدة (شهادة خلو أمراض) لضمان أعلى مستويات السلامة العامة.
         </div>
 
         <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>?? التأهيل والخبرة:</b> 
+            <b>🎓 التأهيل والخبرة:</b> 
             كادرنا مدرب على أحدث تقنيات التنظيف والتعقيم، مع خبرة عملية لا تقل عن 3 سنوات في التعامل مع مختلف المساحات.
         </div>
 
         <div class="info-card" style="border-right-color: #2e7d32;">
-            <b>?? تنوع الاختصاص:</b> 
+            <b>👥 تنوع الاختصاص:</b> 
             لدينا كادر مختص من <b>(الإناث والذكور)</b>، موزعين حسب نوع الخدمة (تنظيف منزلي، حدائق، مطاعم، أو مكاتب) لتقديم الحل الأمثل لكل مهمة.
         </div>
 
@@ -336,9 +336,9 @@
                 <h2>تواصل معنا</h2>
                 <h2>نســمة تـهتم بك وتسعى لتقـديم خدمة آمنه وذات جودة عالية  أمانك هو أولويتنا </h2>
 
-                <a href="https://wa.me/962777278329" class="whatsapp-btn">?? دردشة واتساب مباشرة</a>
+                <a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a>
 
-                <p style="margin-top: 15px;">?? Email: info@nesmajo.com</p>
+                <p style="margin-top: 15px;">📧 Email: info@nesmajo.com</p>
 
             </div>
 
