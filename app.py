@@ -22,7 +22,7 @@ if not firebase_admin._apps:
 db = firestore.client(database_id="default1")
 
 # --- إعدادات المدير ---
-ADMIN_PASSWORD = "123" # كلمة المرور للوحة التحكم
+ADMIN_PASSWORD = "nesma2026" # كلمة المرور للوحة التحكم
 
 # --- 1. واجهة الزبائن الرئيسية ---
 @app.route('/')
