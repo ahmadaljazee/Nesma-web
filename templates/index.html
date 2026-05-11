@@ -94,8 +94,8 @@ onblur="(this.value=='' ? this.type='text' : this.type='date')"
 required style="flex: 1;">
 
 <input type="text" name="time" placeholder="⏰ اختر ساعة البدء" 
-onfocus="this.type='time'; try{this.showPicker();}catch(e){}" 
-onclick="try{this.showPicker();}catch(e){}"
+onfocus="this.type='time'; setTimeout(() => { try{this.showPicker();}catch(e){} }, 50);" 
+onclick="if(this.type=='time') try{this.showPicker();}catch(e){}"
 onblur="(this.value=='' ? this.type='text' : this.type='time')" 
 required style="flex: 1;">
 </div>
