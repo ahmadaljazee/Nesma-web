@@ -128,7 +128,20 @@ def download_excel():
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         as_attachment=True, 
         download_name=f'Nesma_Bookings_{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx'
-    )
+    ) 
+    @app.route('/update_status/<int:booking_id>', methods=['POST'])
+def update_status(booking_id):
+    if not session.get('logged_in'):
+        return "Unauthorized", 401
+    
+    new_status = request.form.get('status')
+    booking = Booking.query.get(booking_id)
+    
+    if booking:
+        booking.status = new_status
+        db.session.commit()
+        return "Success", 200
+    return "Error", 404
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
