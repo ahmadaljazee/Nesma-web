@@ -107,7 +107,6 @@ def download_excel():
     return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                      as_attachment=True, download_name=f'Nesma_Bookings_{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx')
 
-# --- هنا كان الخطأ، قمت بتعديل المحاذاة لتصبح صحيحة ---
 @app.route('/update_status/<int:booking_id>', methods=['POST'])
 def update_status(booking_id):
     if not session.get('logged_in'):
@@ -119,6 +118,16 @@ def update_status(booking_id):
         db.session.commit()
         return "Success", 200
     return "Error", 404
+
+# --- الإضافة الجديدة: حذف الطلبات المنتهية والملغاة فقط ---
+@app.route('/delete_finished', methods=['POST'])
+def delete_finished():
+    if not session.get('logged_in'):
+        return "Unauthorized", 401
+    # حذف أي طلب حالته 'تم الانتهاء' أو 'تم الإلغاء'
+    Booking.query.filter(Booking.status.in_(['تم الانتهاء', 'تم الإلغاء'])).delete(synchronize_session=False)
+    db.session.commit()
+    return redirect(url_for('admin_dashboard'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
