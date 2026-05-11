@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    
-<div class="header">
-    <h1>إجمالي الحجوزات المستلمة</h1>
-    <div style="display: flex; gap: 10px;">
-        <a href="/download-excel" style="background: white; color: #2e7d32; font-weight: bold; text-decoration: none; padding: 8px 20px; border-radius: 10px; display: flex; align-items: center; gap: 5px;">
-            📊 تحميل ملف إكسل
-        </a>
-        
-        <a href="/admin-logout" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 8px 15px; border-radius: 10px;">
-            تسجيل الخروج
-        </a>
-    </div>
-</div>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم نسمة | الإدارة 📊</title>
@@ -25,15 +12,41 @@
         th, td { padding: 15px; text-align: right; border-bottom: 1px solid #eee; }
         th { background: #2e7d32; color: white; font-weight: bold; }
         tr:hover { background-color: #f1f8e9; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #e3f2fd; color: #1976d2; }
         .btn-map { background: #00c853; color: white; padding: 8px 15px; text-decoration: none; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
         .supplies-list { font-size: 12px; color: #555; background: #f9f9f9; padding: 5px; border-radius: 5px; border-right: 3px solid #81c784; }
         .duration-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 5px; font-weight: bold; }
+        
+        /* تنسيق قائمة الحالة */
+        .status-select {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            outline: none;
+        }
+        .status-new { background: #e3f2fd; color: #1976d2; }
+        .status-confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status-booked { background: #fff3e0; color: #ef6c00; }
+        .status-done { background: #f3e5f5; color: #7b1fa2; }
+        .status-canceled { background: #ffebee; color: #c62828; }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
+<div class="header">
+    <h1>إجمالي الحجوزات المستلمة</h1>
+    <div style="display: flex; gap: 10px;">
+        <a href="/download-excel" style="background: white; color: #2e7d32; font-weight: bold; text-decoration: none; padding: 8px 20px; border-radius: 10px; display: flex; align-items: center; gap: 5px;">
+            📊 تحميل ملف إكسل
+        </a>
+        <a href="/admin-logout" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 8px 15px; border-radius: 10px;">
+            تسجيل الخروج
+        </a>
+    </div>
+</div>
 
 <div id="map" style="height: 300px; width: 100%; border-radius: 15px; margin-bottom: 20px; border: 2px solid #2e7d32;"></div>
 
@@ -49,7 +62,7 @@
             <th>العاملة</th>
             <th>نوع الخدمة</th>
             <th>الموعد</th>
-            <th>المستلزمات </th>
+            <th>المستلزمات</th>
             <th>الموقع</th>
             <th>الحالة</th>
         </tr>
@@ -70,7 +83,16 @@
                 <span style="color: #ccc;">غير محدد</span>
                 {% endif %}
             </td>
-            <td><span class="status-badge">{{ b.status }}</span></td>
+            <td>
+                <select class="status-select {% if b.status == 'جديد' %}status-new{% elif b.status == 'تم التأكيد' %}status-confirmed{% elif b.status == 'تم الحجز' %}status-booked{% elif b.status == 'تم الانتهاء' %}status-done{% else %}status-canceled{% endif %}" 
+                        onchange="updateStatus('{{ b.id }}', this.value)">
+                    <option value="جديد" {% if b.status == 'جديد' %}selected{% endif %}>جديد</option>
+                    <option value="تم التأكيد" {% if b.status == 'تم التأكيد' %}selected{% endif %}>تم التأكيد</option>
+                    <option value="تم الحجز" {% if b.status == 'تم الحجز' %}selected{% endif %}>تم الحجز</option>
+                    <option value="تم الانتهاء" {% if b.status == 'تم الانتهاء' %}selected{% endif %}>تم الانتهاء</option>
+                    <option value="تم الإلغاء" {% if b.status == 'تم الإلغاء' %}selected{% endif %}>تم الإلغاء</option>
+                </select>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -84,6 +106,17 @@
         L.marker([{{ b.lat }}, {{ b.lon }}]).addTo(map).bindPopup("<b>الزبون: {{ b.name }}</b><br>العاملة: {{ b.cleaner }}<br>الموعد: {{ b.time }}");
     {% endif %}{% endfor %}
 
+    // دالة تحديث الحالة برمجياً
+    function updateStatus(bookingId, newStatus) {
+        fetch(`/update_status/${bookingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `status=${encodeURIComponent(newStatus)}`
+        }).then(response => {
+            if (response.ok) { location.reload(); }
+            else { alert("حدث خطأ في تحديث الحالة"); }
+        });
+    }
 </script>
 
 </body>
