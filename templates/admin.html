@@ -38,7 +38,13 @@
 
 <div class="header">
     <h1>إجمالي الحجوزات المستلمة</h1>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <form action="/delete_finished" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف جميع الطلبات المنتهية والملغاة؟');" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; font-weight: bold; padding: 8px 15px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                🗑️ تنظيف المنتهي
+            </button>
+        </form>
+
         <a href="/download-excel" style="background: white; color: #2e7d32; font-weight: bold; text-decoration: none; padding: 8px 20px; border-radius: 10px; display: flex; align-items: center; gap: 5px;">
             📊 تحميل ملف إكسل
         </a>
