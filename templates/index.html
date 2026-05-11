@@ -88,8 +88,8 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
     
 <input type="text" name="date" placeholder="📅 اختر تاريخ الحجز" 
-onfocus="this.type='date'; try{this.showPicker();}catch(e){}" 
-
+onfocus="this.type='date'; setTimeout(() => { try{this.showPicker();}catch(e){} }, 10);" 
+onclick="if(this.type=='date') try{this.showPicker();}catch(e){}"
 onblur="(this.value=='' ? this.type='text' : this.type='date')" 
 required style="flex: 1;">
 
