@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import os
+import pandas as pd
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = "NESMA_SECRET_KEY_2026"
 
-# --- تصحيح رابط قاعدة البيانات (لحل مشكلة SQLAlchemy مع Render) ---
+# --- تصحيح رابط قاعدة البيانات ---
 uri = os.environ.get("DATABASE_URL")
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
@@ -16,7 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- تعريف الجدول (لبناء المخزن تلقائياً) ---
+# --- تعريف الجدول ---
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
@@ -33,11 +35,10 @@ class Booking(db.Model):
     status = db.Column(db.String(50), default='جديد')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-# --- إنشاء الجداول (هذا السطر سيحل مشكلة UndefinedTable فوراً) ---
+# --- إنشاء الجداول ---
 with app.app_context():
     db.create_all()
 
-# جلب كلمة السر من إعدادات رندر (الصورة التي أرسلتها)
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123")
 
 @app.route('/')
@@ -86,57 +87,33 @@ def admin_logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
-import pandas as pd
-from io import BytesIO
-from flask import send_file
-
 @app.route('/download-excel')
 def download_excel():
-    if not session.get('logged_in'):
-        return redirect(url_for('admin_login'))
-    
-    # جلب جميع الحجوزات من القاعدة
+    if not session.get('logged_in'): return redirect(url_for('admin_login'))
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
-    
-    # تحويل البيانات إلى قائمة مرتبة
     data = []
     for b in bookings:
         data.append({
-            "الاسم": b.name,
-            "الهاتف": b.phone,
-            "العاملة": b.cleaner,
-            "نوع الخدمة": b.duration,
-            "التاريخ": b.date,
-            "الوقت": b.time,
-            "المستلزمات": b.extra_supplies,
-            "رابط الموقع": b.map_url,
-            "الحالة": b.status,
-            "وقت الطلب": b.timestamp
+            "الاسم": b.name, "الهاتف": b.phone, "العاملة": b.cleaner,
+            "نوع الخدمة": b.duration, "التاريخ": b.date, "الوقت": b.time,
+            "المستلزمات": b.extra_supplies, "رابط الموقع": b.map_url,
+            "الحالة": b.status, "وقت الطلب": b.timestamp
         })
-    
-    # تحويل القائمة إلى ملف إكسل باستخدام Pandas
     df = pd.DataFrame(data)
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Hajoozat_Nesma')
-    
     output.seek(0)
-    
-    # إرسال الملف للمتصفح للتحميل
-    return send_file(
-        output, 
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        as_attachment=True, 
-        download_name=f'Nesma_Bookings_{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx'
-    ) 
-    @app.route('/update_status/<int:booking_id>', methods=['POST'])
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                     as_attachment=True, download_name=f'Nesma_Bookings_{datetime.datetime.now().strftime("%Y-%m-%d")}.xlsx')
+
+# --- هنا كان الخطأ، قمت بتعديل المحاذاة لتصبح صحيحة ---
+@app.route('/update_status/<int:booking_id>', methods=['POST'])
 def update_status(booking_id):
     if not session.get('logged_in'):
         return "Unauthorized", 401
-    
     new_status = request.form.get('status')
     booking = Booking.query.get(booking_id)
-    
     if booking:
         booking.status = new_status
         db.session.commit()
