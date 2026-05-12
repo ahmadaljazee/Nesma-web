@@ -276,25 +276,21 @@ required style="flex: 1;">
 
     // 4. الدالة الشاملة عند تحميل الصفحة (تفريغ الحقول + السبلّاش + الأمان + الاستعادة)
     window.onload = function() {
-        // تفريغ الفورم إجبارياً عند تحميل الصفحة لأول مرة
-        const form = document.getElementById('bookingForm');
-        if(form) form.reset();
-        localStorage.clear();
-
-        // إخفاء السبلّاش ثم إظهار نافذة الأمان
-        setTimeout(function() {
-            const splash = document.getElementById('splash');
-            if(splash) {
-                splash.style.transition = "0.8s";
-                splash.style.opacity = "0";
-                setTimeout(() => { 
-                    splash.style.display = 'none'; 
-                    const trust = document.getElementById('trustModal');
-                    if(trust) trust.style.display = 'flex';
-                }, 800);
-            }
-        }, 1500);
-
+    // إخفاء السبلّاش (Splash Screen) ثم إظهار نافذة الأمان
+    setTimeout(function() {
+        const splash = document.getElementById('splash');
+        if(splash) {
+            splash.style.transition = "0.8s";
+            splash.style.opacity = "0";
+            setTimeout(() => { 
+                splash.style.display = 'none'; 
+                const trust = document.getElementById('trustModal');
+                if(trust) {
+                    trust.style.display = 'flex'; // لضمان التوسط في المنتصف
+                }
+            }, 800);
+        }
+    }, 1500);
         // التحقق من حالة النجاح في الرابط
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('status') === 'success') {
