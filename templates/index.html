@@ -41,27 +41,43 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
 </style> </head>
     
 <body>
-    <div id="trustModal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
-    <div class="card" style="max-width: 380px; border: none; border-radius: 40px; position: relative; padding: 40px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+  <div id="trustModal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(8px); direction: rtl;">
+    <div class="card" style="max-width: 360px; border: none; border-radius: 35px; position: relative; padding: 35px 25px; text-align: center; background: #ffffff; box-shadow: 0 25px 50px rgba(0,0,0,0.4);">
         
-<div style="margin-bottom: 20px; display: flex; justify-content: center;">
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAAB49DuoAAAAbFBMVEX///8AAAD+/v78/Pz4+Pj09PTx8fHs7Ozp6enm5ubk5OTg4ODc3Nza2trX19fU1NTQ0NDMzMzJycnGxsbCwsK+vr66urq2traurq6qqqqnp6ekpKSgoKCcnJyUlJSkpKSgoKCcnJyUlJSnp6eZ0Y9BAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB3ElEQVRYhe2X2ZKCMAxFBSeCooAsguL//7S0AmWpS9uOnSszD22S3iS5SStS6v9XpCh9ZAnTfUUpInmY8itKEMnAlF9R/En6pvyK4k3SN+VXFG+Srim/oniTdE35FcUbpWvKryjeKF1TfkXxRtG1n6J7E7p29vT66K7p9e/Vz6m6Nu9Xj666NvlX9666Nt1Xd666NttXN666NttXV666NtlXV666NtlXV666NtlXV666NtlXv666Nr9X7666Nr9Xv666Nr9Xp666Nt9Xp666Nt9Xp666Nt9Xp666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xp666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt9Xv666Nt/3A76YAn7fB8I6AAAAAElFTkSuQmCC" 
-         alt="Jordan Shield" 
-         style="width: 100px; height: auto;">
-</div>
+        <div style="margin-bottom: 25px; display: flex; justify-content: center;">
+            <svg width="120" height="140" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#a0a0a0;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#606060;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M50 5 L90 20 V50 C90 80 50 110 50 115 C50 110 10 80 10 50 V20 L50 5Z" fill="url(#silver)" stroke="#444" stroke-width="1"/>
+                <path d="M50 12 L82 24 V50 C82 74 50 98 50 103 C50 98 18 74 18 50 V24 L50 12Z" fill="white" id="flag-bg"/>
+                <clipPath id="shieldClip">
+                    <path d="M50 12 L82 24 V50 C82 74 50 98 50 103 C50 98 18 74 18 50 V24 L50 12Z" />
+                </clipPath>
+                <g clip-path="url(#shieldClip)">
+                    <rect x="0" y="12" width="100" height="30" fill="black" />
+                    <rect x="0" y="42" width="100" height="30" fill="#007a3d" />
+                    <polygon points="18,12 18,103 55,57" fill="#ce1126" />
+                    <polygon points="32,57 30.5,59 28.5,58.5 28.5,60.5 26.5,61.5 28.5,62.5 28.5,64.5 30.5,64 32,66 33.5,64 35.5,64.5 35.5,62.5 37.5,61.5 35.5,60.5 35.5,58.5 33.5,59" fill="white" />
+                </g>
+            </svg>
+        </div>
 
-        <h2 style="color: var(--main-green); margin: 0 0 15px 0; font-size: 28px; font-weight: bold;">أمانكم أولويتنا</h2>
+        <h2 style="color: #2e7d32; margin: 0 0 15px 0; font-size: 26px; font-weight: 900; font-family: 'Cairo', sans-serif;">أمانكم أولويتنا</h2>
         
-        <p style="font-size: 16px; line-height: 1.8; color: #444; margin-bottom: 25px;">
+        <p style="font-size: 15px; line-height: 1.7; color: #444; margin-bottom: 30px; font-family: 'Cairo', sans-serif;">
             نود طمأنتكم بأن جميع كوادرنا خضعوا لـ <b>فحوصات طبية معتمدة</b> ولديهم <b>سجلات أمنية نظيفة</b> لضمان تقديم خدمة آمنة وموثوقة.
         </p>
 
-        <button onclick="closeTrustModal()" class="submit-btn" style="margin-top: 5px; border-radius: 20px; background: #2e7d32; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);">
-            استمرار
+        <button onclick="closeTrustModal()" style="width: 100%; padding: 15px; border-radius: 20px; border: none; background: #2e7d32; color: white; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3); transition: 0.3s;">
+            موافق، استمرار
         </button>
     </div>
-</div>
-<div id="splash" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; display:flex; justify-content:center; align-items:center;">
+</div><div id="splash" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; display:flex; justify-content:center; align-items:center;">
     <img src="/static/logo.png" style="width:150px; animation: pulse 1.5s infinite;">
 </div>
 
