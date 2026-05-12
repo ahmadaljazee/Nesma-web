@@ -111,7 +111,54 @@ required style="flex: 1;">
 <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
 <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button></form> </div> </div>
 
+<div id="PriceList" class="tab-content">
+    <div class="card">
+        <h2 style="color: var(--main-green); margin-bottom: 20px; text-align: center;">✨ قائمة أسعار نسمة ✨</h2>
+        
+        <div class="price-grid" style="display: grid; gap: 15px; direction: rtl;">
+            
+            <div class="price-item" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border-right: 5px solid var(--main-green); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; color: #333;">خدمة الـ 4 ساعات (عاملة منزلية واحدة)</span>
+                <span style="color: var(--main-green); font-weight: bold; font-size: 1.2rem;">25 دينار</span>
+            </div>
 
+            <div class="price-item" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border-right: 5px solid var(--main-green); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; color: #333;">خدمة الـ 6 ساعات (عاملة منزلية واحدة)</span>
+                <span style="color: var(--main-green); font-weight: bold; font-size: 1.2rem;">30 دينار</span>
+            </div>
+
+            <div class="price-item" style="background: #f1f8f1; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-weight: bold; color: #333;">العقد الشهري (6 ساعات)</span>
+                    <br><small style="color: #666;">4 زيارات في الشهر</small>
+                </div>
+                <span style="color: #d4af37; font-weight: bold; font-size: 1.2rem;">110 دينار</span>
+            </div>
+
+            <div class="price-item" style="background: #f1f8f1; padding: 15px; border-radius: 10px; border-right: 5px solid #d4af37; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="font-weight: bold; color: #333;">العقد الشهري (4 ساعات)</span>
+                    <br><small style="color: #666;">4 زيارات في الشهر</small>
+                </div>
+                <span style="color: #d4af37; font-weight: bold; font-size: 1.2rem;">90 دينار</span>
+            </div>
+
+            <div class="price-item" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border-right: 5px solid #333; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; color: #333;">تنظيف المكاتب والشركات</span>
+                <span style="color: #333; font-weight: bold;">1 دينار / م²</span>
+            </div>
+
+            <div class="price-note" style="background: #fffbe6; padding: 15px; border-radius: 10px; border: 1px dashed #d4af37; margin-top: 10px; text-align: center;">
+                <p style="margin-bottom: 5px; font-weight: bold; color: #856404;">📝 خدمات التنسيق الخاص:</p>
+                <p style="font-size: 0.9rem; color: #856404; margin: 0;">
+                    تنظيف المطاعم، المباني بعد الإنشاء، والحدائق 
+                    <br><strong>حسب المساحة والخدمة بالتنسيق مع قسم المتابعة</strong>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
 <div id="about" class="tab-content">
 <div class="card">
 <h2 style="color: var(--main-green); margin-bottom: 20px;">من نحن؟ </h2>
