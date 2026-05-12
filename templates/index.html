@@ -68,14 +68,6 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
 <form action="/save_booking" method="POST" id="bookingForm">
 <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
 <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
-    
-<select name="cleaner">
-  <option value="">اختيار العاملة - اختياري -</option>
-  <option>سناء م. ⭐ 4.9</option>
-  <option>أمل ع. ⭐ 4.7</option>
-  <option>ريم س. ⭐ 4.8</option>
-</select>
-    
 <select name="duration" required>
    <option value="">⏱️ اختر نوع الخدمـة</option>
    <option> خدمة منزلية سريعة (4 ساعات)</option>
@@ -84,6 +76,13 @@ input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var
    <option>  خدمة تنظيف وتنسيق الحدائق</option>
    <option>  خدمة تنظيف ما بعد التشطيب للمنازل والمباني </option>
    <option>  خدمة تنظيف احترافي للمطاعم </option>
+</select>    
+<select name="cleaner">
+  <option value="">عدد العامـــلات -</option>
+  <option> 1 عامــلة عدد </option>
+ <option> 2 عامــلة عدد </option>
+ <option> 3 عامــلة عدد </option>
+ 
 </select>
 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
     
