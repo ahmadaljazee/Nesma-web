@@ -66,6 +66,7 @@
         <tr>
             <th>الاسم</th>
             <th>الهاتف</th>
+            <th>عدد العاملات المطلوبات</th>
             <th>العاملة (تعيين)</th> <th>نوع الخدمة</th>
             <th>الموعد</th>
             <th>المستلزمات</th>
@@ -78,6 +79,7 @@
         <tr>
             <td style="font-weight: bold;">{{ b.name }}</td>
             <td>{{ b.phone }}</td>
+            <td>{{ b.workers_count }}</td>
             <td>
                 <form action="{{ url_for('assign_worker', booking_id=b.id) }}" method="POST" style="margin: 0;">
                     <select name="worker_id" class="worker-select" onchange="this.form.submit()">
