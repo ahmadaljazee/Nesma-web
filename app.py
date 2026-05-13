@@ -239,8 +239,9 @@ def delete_worker(id):
         flash('تم حذف العاملة بنجاح')
     return redirect(url_for('manage_workers'))
     
-    @app.route('/manifest.json')
+@app.route('/manifest.json')
 def manifest():
+    # لاحظ الفراغ (4 مسافات) قبل كلمة return
     return {
         "short_name": "Nesma",
         "name": "Nesma Cleaning Services",
@@ -256,8 +257,8 @@ def manifest():
         "theme_color": "#121212",
         "background_color": "#121212"
     }
-    
 
+# هذا السطر لازم يرجع لأول السطر تماماً (بدون أي مسافة قبله)
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
