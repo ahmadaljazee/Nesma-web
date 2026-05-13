@@ -61,7 +61,7 @@
             </div>
             <div class="mt-3">
                 {% if task.status != 'completed' %}
-                    <form action="{{ url_for('update_status', task_id=task.id, action='start' if task.status == 'pending' else 'end') }}" method="POST">
+                    <form action="{{ url_for('worker_update_status', task_id=task.id, action='start' if task.status == 'pending' else 'end') }}" method="POST">
                         <button type="submit" class="btn btn-nesma">
                             {{ 'ابدئي الزيارة الآن 🚀' if task.status == 'pending' else 'تأكيد إنهاء المهمة ✅' }}
                         </button>
