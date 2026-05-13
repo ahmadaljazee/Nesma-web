@@ -41,29 +41,35 @@
             <p class="text-white-50">مرحباً بكِ، <b>{{ worker.name }}</b> في لوحة مهامك</p>
         </div>
 
-        <h4 class="mb-4 gold-text"><i class="fas fa-list-check"></i> جدول مواعيدك الأسبوعي:</h4>
+        <h4 class="mb-4 gold-text"><i class="fas fa-list-check"></i> جدول مواعيدك:</h4>
 
         {% for task in tasks %}
         <div class="booking-card">
             <div class="row align-items-center">
                 <div class="col-8">
-                    <h4 class="text-white mb-1">{{ task.customer_name }}</h4>
+                    <h4 class="text-white mb-1">{{ task.name }}</h4> 
                     <div class="booking-details">
-                        <i class="fas fa-calendar-alt"></i> {{ task.visit_day }}<br>
-                        <i class="fas fa-clock"></i> {{ task.visit_time }}
+                        <i class="fas fa-calendar-alt"></i> التاريخ: {{ task.date }}<br>
+                        <i class="fas fa-clock"></i> الوقت: {{ task.time }}<br>
+                        <i class="fas fa-users"></i> العدد: {{ task.workers_count }} عاملات
+                    </div>
+                    <div class="mt-2">
+                         <a href="{{ task.map_url }}" target="_blank" class="text-decoration-none" style="color: #00c853;">
+                             <i class="fas fa-location-dot"></i> فتح موقع الزبون
+                         </a>
                     </div>
                 </div>
                 <div class="col-4 text-end">
-                    <span class="badge badge-status {% if task.status == 'pending' %}bg-secondary{% elif task.status == 'in_progress' %}bg-warning text-dark{% else %}bg-success{% endif %}">
-                        {% if task.status == 'pending' %}بانتظارك{% elif task.status == 'in_progress' %}جاري العمل{% else %}تم الانتهاء{% endif %}
+                    <span class="badge badge-status {% if task.status == 'جديد' %}bg-secondary{% elif task.status == 'جاري العمل' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                        {{ task.status }}
                     </span>
                 </div>
             </div>
             <div class="mt-3">
-                {% if task.status != 'completed' %}
-                    <form action="{{ url_for('worker_update_status', task_id=task.id, action='start' if task.status == 'pending' else 'end') }}" method="POST">
+                {% if task.status != 'تم الانتهاء' %}
+                    <form action="{{ url_for('worker_update_status', task_id=task.id, action='start' if task.status == 'جديد' else 'end') }}" method="POST">
                         <button type="submit" class="btn btn-nesma">
-                            {{ 'ابدئي الزيارة الآن 🚀' if task.status == 'pending' else 'تأكيد إنهاء المهمة ✅' }}
+                            {{ 'ابدئي الزيارة الآن 🚀' if task.status == 'جديد' else 'تأكيد إنهاء المهمة ✅' }}
                         </button>
                     </form>
                 {% else %}
