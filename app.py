@@ -257,6 +257,24 @@ def manifest():
         "theme_color": "#121212",
         "background_color": "#121212"
     }
+@app.route('/worker_manifest.json')
+def worker_manifest():
+    
+    return {
+        "short_name": "نسمة-الميدان",
+        "name": "نسمة - لوحة العاملات",
+        "icons": [
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ],
+        "start_url": "/worker/login", # هذا هو السر! عشان يفتح على صفحة العاملة
+        "display": "standalone",
+        "theme_color": "#121212",
+        "background_color": "#121212"
+    }
 
 # هذا السطر لازم يرجع لأول السطر تماماً (بدون أي مسافة قبله)
 if __name__ == '__main__':
