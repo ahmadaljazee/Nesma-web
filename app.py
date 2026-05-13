@@ -88,6 +88,7 @@ def save_booking():
             duration=request.form.get('duration'),
             date=request.form.get('date'),
             time=request.form.get('time'),
+            worker_id=None ,
             extra_supplies=", ".join(request.form.getlist('extra')) or "لا يوجد",
             lat=lat, lon=lon,
             map_url=f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
