@@ -49,23 +49,23 @@ class Booking(db.Model):
     map_url = db.Column(db.Text)
     status = db.Column(db.String(50), default='جديد')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    __tablename__ = 'bookings'
-    id = db.Column(db.Integer, primary_key=True)
-    # ... بقية الحقول ...
-    # أضف هذا السطر هنا ربط الحجز بعاملة محددة
+    
+    # التعديل الصحيح هنا: الحقول يجب أن تكون داخل الكلاس
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
-workers_count = db.Column(db.String(10), default='1') # حقل عدد العاملات
+    workers_count = db.Column(db.String(10), default='1') 
+
 @login_manager.user_loader
 def load_user(user_id):
     return Worker.query.get(int(user_id))
 
-# --- إنشاء الجداول ---
+# --- إنشاء وتحديث الجداول ---
 with app.app_context():
     db.create_all()
     try:
         from sqlalchemy import text
-        # هذا السطر هو اللي راح يحل مشكلة الـ (UndefinedColumn) اللي بالصورة
+        # تحديث قاعدة البيانات لإضافة الأعمدة الجديدة إذا لم تكن موجودة
         db.session.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS worker_id INTEGER REFERENCES workers(id)"))
+        db.session.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS workers_count VARCHAR(10)"))
         db.session.commit()
     except Exception as e:
         print(f"Database update log: {e}")
@@ -89,9 +89,9 @@ def save_booking():
             duration=request.form.get('duration'),
             date=request.form.get('date'),
             time=request.form.get('time'),
-            workers_count=request.form.get('cleaner'), # 'cleaner' هو اسم الحقل في الـ HTML عندك
-            worker_id=None ,
-            
+            # استلام عدد العاملات من حقل cleaner في الـ HTML
+            workers_count=request.form.get('cleaner') or '1',
+            worker_id=None,
             extra_supplies=", ".join(request.form.getlist('extra')) or "لا يوجد",
             lat=lat, lon=lon,
             map_url=f"https://www.google.com/maps?q={lat},{lon}" if lat and lon else "غير محدد"
@@ -103,6 +103,8 @@ def save_booking():
         db.session.rollback()
         return f"حدث خطأ أثناء الحفظ: {e}"
 
+# ... (بقية المسارات admin و worker تبقى كما هي في كودك) ...
+
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -112,26 +114,22 @@ def admin_login():
         return "كلمة مرور خاطئة!"
     return '''<div style="text-align:center; margin-top:100px; direction:rtl;"><h2>دخول المدير</h2><form method="post"><input type="password" name="password" placeholder="كلمة المرور"><button type="submit">دخول</button></form></div>'''
 
-# تم تحديث هذا الجزء بناءً على طلبك ليدعم عرض العاملات
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('logged_in'): return redirect(url_for('admin_login'))
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
-    # جلب جميع العاملات لإظهارهم في القائمة المنسدلة
     all_workers = Worker.query.all() 
     return render_template('admin.html', bookings=bookings, workers=all_workers)
 
-# إضافة مسار تعيين العاملة الجديد
 @app.route('/assign_worker/<int:booking_id>', methods=['POST'])
 def assign_worker(booking_id):
     if not session.get('logged_in'): return "Unauthorized", 401
     worker_id = request.form.get('worker_id')
     booking = Booking.query.get(booking_id)
     if booking:
-        booking.worker_id = worker_id if worker_id else None
+        booking.worker_id = worker_id if worker_id and worker_id != "" else None
         db.session.commit()
-        return redirect(url_for('admin_dashboard'))
-    return "Error", 404
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin-logout')
 def admin_logout():
@@ -145,7 +143,7 @@ def download_excel():
     data = []
     for b in bookings:
         data.append({
-            "الاسم": b.name, "الهاتف": b.phone, "العاملة": b.cleaner,
+            "الاسم": b.name, "الهاتف": b.phone, "عدد العاملات": b.workers_count,
             "نوع الخدمة": b.duration, "التاريخ": b.date, "الوقت": b.time,
             "المستلزمات": b.extra_supplies, "رابط الموقع": b.map_url,
             "الحالة": b.status, "وقت الطلب": b.timestamp
@@ -160,8 +158,7 @@ def download_excel():
 
 @app.route('/update_status/<int:booking_id>', methods=['POST'])
 def update_status(booking_id):
-    if not session.get('logged_in'):
-        return "Unauthorized", 401
+    if not session.get('logged_in'): return "Unauthorized", 401
     new_status = request.form.get('status')
     booking = Booking.query.get(booking_id)
     if booking:
@@ -172,13 +169,10 @@ def update_status(booking_id):
 
 @app.route('/delete_finished', methods=['POST'])
 def delete_finished():
-    if not session.get('logged_in'):
-        return "Unauthorized", 401
+    if not session.get('logged_in'): return "Unauthorized", 401
     Booking.query.filter(Booking.status.in_(['تم الانتهاء', 'تم الإلغاء'])).delete(synchronize_session=False)
     db.session.commit()
     return redirect(url_for('admin_dashboard'))
-
-# --- المسارات الخاصة بالعاملات ---
 
 @app.route('/worker/login', methods=['GET', 'POST'])
 def worker_login():
@@ -201,10 +195,7 @@ def worker_dashboard():
 def worker_update_status(task_id, action):
     task = Booking.query.get_or_404(task_id)
     if task.worker_id == current_user.id:
-        if action == 'start':
-            task.status = 'جاري العمل'
-        elif action == 'end':
-            task.status = 'تم الانتهاء'
+        task.status = 'جاري العمل' if action == 'start' else 'تم الانتهاء'
         db.session.commit()
     return redirect(url_for('worker_dashboard'))
 
@@ -221,7 +212,7 @@ def create_worker():
         new_worker = Worker(username='fatima1', password='123', name='فاطمة')
         db.session.add(new_worker)
         db.session.commit()
-        return "تم إنشاء حساب العاملة فاطمة بنجاح! جرب الدخول الآن."
+        return "تم إنشاء حساب العاملة فاطمة بنجاح!"
     return "حساب فاطمة موجود مسبقاً."
 
 if __name__ == '__main__':
