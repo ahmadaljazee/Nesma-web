@@ -289,13 +289,7 @@ required style="flex: 1;">
             splash.style.opacity = "0";
             setTimeout(() => { 
                 splash.style.display = 'none'; 
-                const trust = document.getElementById('trustModal');
-                if(trust) {
-                    trust.style.display = 'flex'; // لضمان التوسط في المنتصف
-                }
-            }, 800);
-        }
-    }, 1500);
+              
         // التحقق من حالة النجاح في الرابط
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('status') === 'success') {
