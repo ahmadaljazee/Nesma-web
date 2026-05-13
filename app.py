@@ -186,7 +186,16 @@ def worker_update_status(task_id, action):
 def worker_logout():
     logout_user()
     return redirect(url_for('worker_login'))
-
+@app.route('/create-first-worker')
+def create_worker():
+    # التحقق إذا كانت العاملة موجودة مسبقاً لتجنب التكرار
+    existing = Worker.query.filter_by(username='fatima1').first()
+    if not existing:
+        new_worker = Worker(username='fatima1', password='123', name='فاطمة')
+        db.session.add(new_worker)
+        db.session.commit()
+        return "تم إنشاء حساب العاملة فاطمة بنجاح! جرب الدخول الآن."
+    return "حساب فاطمة موجود مسبقاً."
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
