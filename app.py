@@ -7,7 +7,7 @@ import pandas as pd
 from io import BytesIO
 
 app = Flask(__name__)
-app.secret_key = "NESMA_SECRET_KEY_2026"
+app.secret_key = os.environ.get("NESMA_SECRET_KEY", "default_secret_key_for_local")
 
 # --- تصحيح رابط قاعدة البيانات ---
 uri = os.environ.get("DATABASE_URL")
