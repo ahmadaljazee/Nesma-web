@@ -62,7 +62,7 @@ with app.app_context():
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123")
 
-# --- مسارات الزبائن والأدمن (كما هي بدون تعديل) ---
+# --- مسارات الزبائن والأدمن ---
 
 @app.route('/')
 def index():
@@ -99,11 +99,26 @@ def admin_login():
         return "كلمة مرور خاطئة!"
     return '''<div style="text-align:center; margin-top:100px; direction:rtl;"><h2>دخول المدير</h2><form method="post"><input type="password" name="password" placeholder="كلمة المرور"><button type="submit">دخول</button></form></div>'''
 
+# تم تحديث هذا الجزء بناءً على طلبك ليدعم عرض العاملات
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('logged_in'): return redirect(url_for('admin_login'))
     bookings = Booking.query.order_by(Booking.timestamp.desc()).all()
-    return render_template('admin.html', bookings=bookings)
+    # جلب جميع العاملات لإظهارهم في القائمة المنسدلة
+    all_workers = Worker.query.all() 
+    return render_template('admin.html', bookings=bookings, workers=all_workers)
+
+# إضافة مسار تعيين العاملة الجديد
+@app.route('/assign_worker/<int:booking_id>', methods=['POST'])
+def assign_worker(booking_id):
+    if not session.get('logged_in'): return "Unauthorized", 401
+    worker_id = request.form.get('worker_id')
+    booking = Booking.query.get(booking_id)
+    if booking:
+        booking.worker_id = worker_id if worker_id else None
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    return "Error", 404
 
 @app.route('/admin-logout')
 def admin_logout():
@@ -150,7 +165,7 @@ def delete_finished():
     db.session.commit()
     return redirect(url_for('admin_dashboard'))
 
-# --- المسارات الجديدة الخاصة بالعاملات ---
+# --- المسارات الخاصة بالعاملات ---
 
 @app.route('/worker/login', methods=['GET', 'POST'])
 def worker_login():
@@ -165,7 +180,6 @@ def worker_login():
 @app.route('/worker/dashboard')
 @login_required
 def worker_dashboard():
-    # جلب الحجوزات المخصصة لهذه العاملة فقط
     user_tasks = Booking.query.filter_by(worker_id=current_user.id).order_by(Booking.timestamp.desc()).all()
     return render_template('worker_dashboard.html', worker=current_user, tasks=user_tasks)
 
@@ -186,9 +200,9 @@ def worker_update_status(task_id, action):
 def worker_logout():
     logout_user()
     return redirect(url_for('worker_login'))
+
 @app.route('/create-first-worker')
 def create_worker():
-    # التحقق إذا كانت العاملة موجودة مسبقاً لتجنب التكرار
     existing = Worker.query.filter_by(username='fatima1').first()
     if not existing:
         new_worker = Worker(username='fatima1', password='123', name='فاطمة')
@@ -196,6 +210,7 @@ def create_worker():
         db.session.commit()
         return "تم إنشاء حساب العاملة فاطمة بنجاح! جرب الدخول الآن."
     return "حساب فاطمة موجود مسبقاً."
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
