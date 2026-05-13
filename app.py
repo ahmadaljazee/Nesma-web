@@ -59,6 +59,15 @@ def load_user(user_id):
 # --- إنشاء الجداول ---
 with app.app_context():
     db.create_all()
+    # كود لإضافة العمود يدوياً في حال عدم وجوده (يتناسب مع الخطة المجانية)
+    try:
+        from sqlalchemy import text
+        # فحص وجود العمود أولاً لتجنب الأخطاء
+        db.session.execute(text("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS worker_id INTEGER REFERENCES workers(id)"))
+        db.session.commit()
+        print("تم تحديث الجداول بنجاح!")
+    except Exception as e:
+        print(f"تنبيه: {e}")
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123")
 
