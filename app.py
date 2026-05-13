@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, session, url_for, send_file
+from flask import Flask, render_template, request, redirect, session, url_for, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import datetime
 import os
 import pandas as pd
@@ -13,12 +14,26 @@ uri = os.environ.get("DATABASE_URL")
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = uri
+app.config['SQLALCHEMY_DATABASE_URI'] = uri or 'sqlite:///nesma_main.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- تعريف الجدول ---
+# --- إعداد نظام الدخول للعاملات ---
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'worker_login'
+
+# --- تعريف الجداول (Models) ---
+
+class Worker(UserMixin, db.Model):
+    __tablename__ = 'workers'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100))
+    bookings = db.relationship('Booking', backref='worker', lazy=True)
+
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
@@ -34,12 +49,20 @@ class Booking(db.Model):
     map_url = db.Column(db.Text)
     status = db.Column(db.String(50), default='جديد')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    # ربط الحجز بعاملة محددة
+    worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Worker.query.get(int(user_id))
 
 # --- إنشاء الجداول ---
 with app.app_context():
     db.create_all()
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "123")
+
+# --- مسارات الزبائن والأدمن (كما هي بدون تعديل) ---
 
 @app.route('/')
 def index():
@@ -119,15 +142,50 @@ def update_status(booking_id):
         return "Success", 200
     return "Error", 404
 
-# --- الإضافة الجديدة: حذف الطلبات المنتهية والملغاة فقط ---
 @app.route('/delete_finished', methods=['POST'])
 def delete_finished():
     if not session.get('logged_in'):
         return "Unauthorized", 401
-    # حذف أي طلب حالته 'تم الانتهاء' أو 'تم الإلغاء'
     Booking.query.filter(Booking.status.in_(['تم الانتهاء', 'تم الإلغاء'])).delete(synchronize_session=False)
     db.session.commit()
     return redirect(url_for('admin_dashboard'))
+
+# --- المسارات الجديدة الخاصة بالعاملات ---
+
+@app.route('/worker/login', methods=['GET', 'POST'])
+def worker_login():
+    if request.method == 'POST':
+        user = Worker.query.filter_by(username=request.form['username']).first()
+        if user and user.password == request.form['password']:
+            login_user(user)
+            return redirect(url_for('worker_dashboard'))
+        flash('اسم المستخدم أو كلمة المرور غير صحيحة')
+    return render_template('worker_login.html')
+
+@app.route('/worker/dashboard')
+@login_required
+def worker_dashboard():
+    # جلب الحجوزات المخصصة لهذه العاملة فقط
+    user_tasks = Booking.query.filter_by(worker_id=current_user.id).order_by(Booking.timestamp.desc()).all()
+    return render_template('worker_dashboard.html', worker=current_user, tasks=user_tasks)
+
+@app.route('/worker/update_status/<int:task_id>/<action>', methods=['POST'])
+@login_required
+def worker_update_status(task_id, action):
+    task = Booking.query.get_or_404(task_id)
+    if task.worker_id == current_user.id:
+        if action == 'start':
+            task.status = 'جاري العمل'
+        elif action == 'end':
+            task.status = 'تم الانتهاء'
+        db.session.commit()
+    return redirect(url_for('worker_dashboard'))
+
+@app.route('/worker/logout')
+@login_required
+def worker_logout():
+    logout_user()
+    return redirect(url_for('worker_login'))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
