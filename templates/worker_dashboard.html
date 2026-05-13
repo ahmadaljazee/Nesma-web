@@ -2,13 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
     <link rel="manifest" href="/worker_manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-    <meta charset="UTF-8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#121212"> <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نسمة - لوحة تحكم العاملة</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         
@@ -44,7 +46,7 @@
             <p class="text-white-50">مرحباً بكِ، <b>{{ worker.name }}</b> في لوحة مهامك</p>
         </div>
 
-        <h4 class="mb-4 gold-text"><i class="fas fa-list-check"></i> جدول مواعيدك:</h4>
+        <h4 class="mb-4 gold-text"><i class="fas fa-list-check"></i> جدول مواعيدك اليومي:</h4>
 
         {% for task in tasks %}
         <div class="booking-card">
@@ -54,11 +56,11 @@
                     <div class="booking-details">
                         <i class="fas fa-calendar-alt"></i> التاريخ: {{ task.date }}<br>
                         <i class="fas fa-clock"></i> الوقت: {{ task.time }}<br>
-                        <i class="fas fa-users"></i> العدد: {{ task.workers_count }} عاملات
+                        <i class="fas fa-users"></i> العدد المطلوب: {{ task.workers_count }} عاملات
                     </div>
                     <div class="mt-2">
-                         <a href="{{ task.map_url }}" target="_blank" class="text-decoration-none" style="color: #00c853;">
-                             <i class="fas fa-location-dot"></i> فتح موقع الزبون
+                         <a href="https://www.google.com/maps?q={{ task.lat }},{{ task.lon }}" target="_blank" class="text-decoration-none" style="color: #00c853;">
+                             <i class="fas fa-location-dot"></i> فتح موقع الزبون بالخريطة
                          </a>
                     </div>
                 </div>
@@ -90,6 +92,16 @@
             </a>
         </div>
     </div>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('Worker App SW registered!');
+          });
+        });
+      }
+    </script>
 
 </body>
 </html>
