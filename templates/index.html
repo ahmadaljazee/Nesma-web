@@ -251,7 +251,10 @@ required style="flex: 1;">
         document.getElementById(tabName).style.display = "block";
         if (evt) evt.currentTarget.className += " active";
     }
-
+ // 2. دالة إغلاق نافذة الأمان
+    function closeTrustModal() {
+        var modal = document.getElementById('trustModal');
+        if(modal) modal.style.display = 'none';
    
     }
 
