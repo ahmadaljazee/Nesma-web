@@ -239,6 +239,24 @@ def delete_worker(id):
         flash('تم حذف العاملة بنجاح')
     return redirect(url_for('manage_workers'))
     
+    @app.route('/manifest.json')
+def manifest():
+    return {
+        "short_name": "Nesma",
+        "name": "Nesma Cleaning Services",
+        "icons": [
+            {
+                "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ],
+        "start_url": "/",
+        "display": "standalone",
+        "theme_color": "#121212",
+        "background_color": "#121212"
+    }
+    
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
