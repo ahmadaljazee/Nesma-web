@@ -279,24 +279,30 @@ required style="flex: 1;">
         });
     }
 
-    // 4. الدالة الشاملة عند تحميل الصفحة (تفريغ الحقول + السبلّاش + الأمان + الاستعادة)
-    window.onload = function() {
-    // إخفاء السبلّاش (Splash Screen) ثم إظهار نافذة الأمان
+    // 4. الدالة الشاملة عند تحميل الصفحة
+window.onload = function() {
+    // استعادة البيانات
+    restoreData();
+
+    // إخفاء السبلّاش (Splash Screen)
     setTimeout(function() {
         const splash = document.getElementById('splash');
         if(splash) {
             splash.style.transition = "0.8s";
             splash.style.opacity = "0";
-            setTimeout(() => { 
+            setTimeout(function() { 
                 splash.style.display = 'none'; 
-              
-        // التحقق من حالة النجاح في الرابط
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('status') === 'success') {
-            alert("✅ تم استلام طلب الحجز بنجاح! شكراً لثقتك بنسمة.");
-            window.history.replaceState({}, document.title, "/");
+            }, 800); // إغلاق التايمر الصغير
         }
-    };
+    }, 1500); // إغلاق التايمر الكبير
+
+    // التحقق من حالة النجاح في الرابط
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+        alert("✅ تم استلام طلب الحجز بنجاح!");
+        window.history.replaceState({}, document.title, "/");
+    }
+}; // إغلاق الدالة الشاملة
 
     // 5. دالة تحديد الموقع
     function getLocation() {
