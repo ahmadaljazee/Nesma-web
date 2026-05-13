@@ -205,15 +205,40 @@ def worker_logout():
     logout_user()
     return redirect(url_for('worker_login'))
 
-@app.route('/create-first-worker')
-def create_worker():
-    existing = Worker.query.filter_by(username='fatima1').first()
-    if not existing:
-        new_worker = Worker(username='fatima1', password='123', name='فاطمة')
-        db.session.add(new_worker)
+# مسار عرض وإضافة العاملات (للمدير فقط)
+@app.route('/admin/manage-workers', methods=['GET', 'POST'])
+def manage_workers():
+    if not session.get('logged_in'): return redirect(url_for('admin_login'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        
+        # التأكد من أن اسم المستخدم غير مكرر
+        existing = Worker.query.filter_by(username=username).first()
+        if not existing:
+            new_worker = Worker(username=username, password=password, name=name)
+            db.session.add(new_worker)
+            db.session.commit()
+            flash(f'تم إضافة العاملة {name} بنجاح!')
+        else:
+            flash('اسم المستخدم موجود مسبقاً!')
+            
+    workers = Worker.query.all()
+    return render_template('manage_workers.html', workers=workers)
+
+# مسار حذف عاملة
+@app.route('/admin/delete-worker/<int:id>')
+def delete_worker(id):
+    if not session.get('logged_in'): return redirect(url_for('admin_login'))
+    worker = Worker.query.get(id)
+    if worker:
+        db.session.delete(worker)
         db.session.commit()
-        return "تم إنشاء حساب العاملة فاطمة بنجاح!"
-    return "حساب فاطمة موجود مسبقاً."
+        flash('تم حذف العاملة بنجاح')
+    return redirect(url_for('manage_workers'))
+    
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
