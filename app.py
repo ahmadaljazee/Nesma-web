@@ -49,7 +49,10 @@ class Booking(db.Model):
     map_url = db.Column(db.Text)
     status = db.Column(db.String(50), default='جديد')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    # ربط الحجز بعاملة محددة
+    __tablename__ = 'bookings'
+    id = db.Column(db.Integer, primary_key=True)
+    # ... بقية الحقول ...
+    # أضف هذا السطر هنا ربط الحجز بعاملة محددة
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
 workers_count = db.Column(db.String(10), default='1') # حقل عدد العاملات
 @login_manager.user_loader
