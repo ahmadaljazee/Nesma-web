@@ -51,7 +51,7 @@ class Booking(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     # ربط الحجز بعاملة محددة
     worker_id = db.Column(db.Integer, db.ForeignKey('workers.id'))
-
+workers_count = db.Column(db.String(10), default='1') # حقل عدد العاملات
 @login_manager.user_loader
 def load_user(user_id):
     return Worker.query.get(int(user_id))
