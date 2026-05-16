@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم {{ company.name }} | الإدارة 📊</title>
+    <style>
+        :root { --main-green: #2e7d32; --nesma-gold: #d4af37; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
+        .header { background: var(--main-green); color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; border-top: 5px solid var(--main-green); }
+
+        .table-container { background: white; border-radius: 15px; overflow-x: auto; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 15px; text-align: right; border-bottom: 1px solid #eee; }
+        th { background: var(--main-green); color: white; font-weight: bold; position: sticky; top: 0; }
+        tr:hover { background-color: #f1f8e9; }
+
+        .btn-map { background: #00c853; color: white; padding: 8px 15px; text-decoration: none; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
+        .supplies-list { font-size: 12px; color: #555; background: #f9fdf9; padding: 8px; border-radius: 8px; border-right: 3px solid #81c784; line-height: 1.4; }
+        
+        .status-select, .worker-select { padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid #ddd; cursor: pointer; outline: none; width: 100%; }
+        .worker-select { border-color: var(--nesma-gold); background: #fffdf5; color: #a27e00; }
+        
+        /* ألوان الحالات */
+        .status-new { background: #e3f2fd; color: #1976d2; }
+        .status-confirmed { background: #e8f5e9; color: var(--main-green); }
+        .status-done { background: #f3e5f5; color: #7b1fa2; }
+        .status-canceled { background: #ffebee; color: #c62828; }
+
+        #map { height: 350px; width: 100%; border-radius: 15px; margin-bottom: 25px; border: 2px solid var(--main-green); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        .worker-action-box { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; border-right: 5px solid var(--nesma-gold); }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div class="header">
+    <h1>إدارة حجوزات: {{ company.name }}</h1>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <form action="/{{ company.slug }}/delete_finished" method="POST" onsubmit="return confirm('هل أنت متأكد؟');" style="margin: 0;">
+            <button type="submit" style="background: #c62828; color: white; border: none; font-weight: bold; padding: 8px 15px; border-radius: 10px; cursor: pointer;">🗑️ تنظيف المنتهي</button>
+        </form>
+        <a href="/{{ company.slug }}/logout" style="color: white; font-weight: bold; text-decoration: none; border: 1px solid white; padding: 8px 15px; border-radius: 10px;">تسجيل الخروج</a>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h2 style="margin: 0; color: var(--main-green);">{{ bookings|length }}</h2>
+        <p style="margin: 5px 0 0; color: #666;">إجمالي الحجوزات</p>
+    </div>
+    <div class="stat-card">
+        <h2 style="margin: 0; color: var(--nesma-gold);">{{ workers|length }}</h2>
+        <p style="margin: 5px 0 0; color: #666;">طاقم العاملات</p>
+    </div>
+</div>
+
+<div class="worker-action-box">
+    <h3 style="margin-top: 0; color: var(--main-green);">👥 إضافة عاملة جديدة للمنظومة</h3>
+    <form action="/{{ company.slug }}/add_worker" method="POST" style="display: flex; gap: 10px;">
+        <input type="text" name="worker_name" placeholder="اسم العاملة" required style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+        <input type="password" name="worker_password" placeholder="كلمة المرور" required style="width: 150px; padding: 10px; border-radius: 10px; border: 1px solid #ddd;">
+        <button type="submit" style="background: var(--main-green); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer;">إضافة +</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>تعيين عاملة</th>
+                <th>نوع الخدمة</th>
+                <th>الموعد</th>
+                <th>تفاصيل لوجستية</th>
+                <th>الموقع</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td style="font-weight: bold;">{{ b.name }}</td>
+                <td>
+                    {{ b.phone }} 
+                    <a href="https://wa.me/962{{ b.phone[1:] }}" target="_blank" style="text-decoration: none;">🟢</a>
+                </td>
+                <td>
+                    <form action="/{{ company.slug }}/assign_worker/{{ b.id }}" method="POST" style="margin: 0;">
+                        <select name="worker_id" class="worker-select" onchange="this.form.submit()">
+                            <option value="">-- تعيين --</option>
+                            {% for worker in workers %}
+                                <option value="{{ worker.id }}" {% if b.worker_id == worker.id %}selected{% endif %}>
+                                    {{ worker.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+                <td>{{ b.duration }}</td>
+                <td>{{ b.date }} <span style="color: #888;">| {{ b.time }}</span></td>
+                <td><div class="supplies-list">{{ b.extra }}</div></td>
+                <td>
+                    {% if b.lat and b.lon %}
+                    <a href="https://www.google.com/maps?q={{ b.lat }},{{ b.lon }}" target="_blank" class="btn-map">📍 الموقع</a>
+                    {% else %}
+                    <span style="color: #ccc;">غير محدد</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <select class="status-select {% if b.status == 'جديد' %}status-new{% elif b.status == 'مؤكد' %}status-confirmed{% elif b.status == 'منتهي' %}status-done{% else %}status-canceled{% endif %}" 
+                            onchange="updateStatus('{{ b.id }}', this.value)">
+                        <option value="جديد" {% if b.status == 'جديد' %}selected{% endif %}>جديد</option>
+                        <option value="مؤكد" {% if b.status == 'مؤكد' %}selected{% endif %}>مؤكد</option>
+                        <option value="منتهي" {% if b.status == 'منتهي' %}selected{% endif %}>منتهي</option>
+                        <option value="ملغي" {% if b.status == 'ملغي' %}selected{% endif %}>ملغي</option>
+                    </select>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([31.9454, 35.9284], 11); 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    {% for b in bookings %}{% if b.lat and b.lon %}
+        L.marker([{{ b.lat }}, {{ b.lon }}]).addTo(map).bindPopup("<b>{{ b.name }}</b><br>المستلزمات: {{ b.extra }}");
+    {% endif %}{% endfor %}
+
+    function updateStatus(bookingId, newStatus) {
+        fetch(`/{{ company.slug }}/update_status/${bookingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `status=${encodeURIComponent(newStatus)}`
+        }).then(response => {
+            if (response.ok) { location.reload(); }
+            else { alert("حدث خطأ في التحديث"); }
+        });
+    }
+</script>
+
+</body>
+</html>
