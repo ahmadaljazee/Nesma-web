@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+    <title>{{ company.name }} | Nesma - خدمات تنظيف احترافية</title>
+    <style>
+        :root { --main-green: #2e7d32; --light-green: #00c853; }
+        body {margin: 0; padding: 0;background: linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), url('/static/bg.png');
+        background-size: cover; background-position: center; background-attachment: fixed;
+        font-family: 'Segoe UI', Tahoma, sans-serif; color: #0a3d0d;}
+
+        .tabs-header {position: sticky; top: 0; z-index: 1000;
+        display: flex; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow-x: auto; white-space: nowrap;}
+
+        .tab-btn {flex: 1; padding: 15px 10px; border: none; background: none;
+        font-weight: bold; color: var(--main-green); cursor: pointer;
+        transition: 0.3s; border-bottom: 3px solid transparent; font-size: 14px;}
+
+        .tab-btn.active { border-bottom: 3px solid var(--light-green); background: #f1f8e9; }
+        .container { max-width: 450px; margin: auto; padding: 20px; text-align: center; }
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        .card { background: rgba(255,255,255,0.9); border-radius: 20px; padding: 25px; border: 1px solid #a5d6a7; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .logo { width: 100px; margin: 10px 0; }
+
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--main-green); border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .submit-btn { background: var(--main-green); color: white; border: none; padding: 16px; width: 100%; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .whatsapp-btn { background: #25D366; color: white; display: block; padding: 15px; border-radius: 30px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--main-green); text-align: right; }
+        .extras-container { text-align: right; margin: 15px 0; padding: 15px; background: #f9fdf9; border-radius: 12px; border: 1px solid #c8e6c9; }
+        .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; margin-top: 10px; }
+        .extras-grid label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="trustModal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 11000; justify-content: center; align-items: center; backdrop-filter: blur(12px); direction: rtl;">
+        <div class="card" style="max-width: 380px; border: none; border-radius: 45px; position: relative; padding: 45px 30px; text-align: center; background: rgba(255, 255, 255, 0.98); box-shadow: 0 30px 60px rgba(0,0,0,0.5); border: 1px solid rgba(46, 125, 50, 0.1);">
+            <div style="margin-bottom: 20px; display: flex; justify-content: center;">
+                <img src="https://flagcdn.com/w320/jo.png" alt="الأردن" style="width: 120px; height: auto; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            </div>
+            <h2 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 30px; font-weight: 900;">أمانكم أولويتنا</h2>
+            <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 35px;">نود طمأنتكم بأن جميع كوادرنا خضعوا لـ <b>فحوصات طبية معتمدة</b> ولديهم <b>سجلات أمنية نظيفة</b>.</p>
+            <button onclick="closeTrustModal()" style="width: 100%; padding: 18px; border-radius: 25px; border: none; background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; font-size: 20px; font-weight: bold; cursor: pointer;">استمرار</button>
+        </div>
+    </div>
+
+    <div id="splash" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:10000; display:flex; justify-content:center; align-items:center;">
+        <img src="/static/logo.png" style="width:150px; animation: pulse 1.5s infinite;">
+    </div>
+
+    <div class="tabs-header">
+        <button class="tab-btn active" onclick="openTab(event, 'main')">الرئيسية</button>
+        <button class="tab-btn" onclick="openTab(event, 'PriceList')">الأسعار</button>
+        <button class="tab-btn" onclick="openTab(event, 'about')">من نحن</button>
+        <button class="tab-btn" onclick="openTab(event, 'services')">خدماتنا</button>
+        <button class="tab-btn" onclick="openTab(event, 'staff')">الموظفين</button>
+        <button class="tab-btn" onclick="openTab(event, 'contact')">اتصل بنا</button>
+    </div>
+
+    <div class="container">
+        <img src="/static/logo.png" class="logo" onerror="this.style.display='none'">
+        
+        <div id="main" class="tab-content active">
+            <div class="card">
+                <h1>احجز {{ company.name }} الآن</h1>
+                <form action="/{{ company.slug }}/save_booking" method="POST" id="bookingForm">
+                    <input type="text" name="name" placeholder="👤 الاسم الكامل" required>
+                    <input type="tel" name="phone" placeholder="📞 رقم الجوال" required>
+                    <select name="duration" required>
+                        <option value="">⏱️ اختر نوع الخدمـة</option>
+                        <option>خدمة منزلية سريعة (4 ساعات)</option>
+                        <option>خدمة منزلية كاملة (6 ساعات)</option>
+                        <option>خدمة تنظيف للمكاتب والشركات</option>
+                        <option>خدمة تنظيف وتنسيق الحدائق</option>
+                        <option>خدمة تنظيف ما بعد التشطيب للمنازل والمباني</option>
+                        <option>خدمة تنظيف احترافي للمطاعم</option>
+                    </select>    
+                    <select name="cleaner">
+                        <option value="">عدد العامـــلات</option>
+                        <option>1</option><option>2</option><option>3</option>
+                    </select>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="date" name="date" required style="flex: 1;">
+                        <input type="time" name="time" required style="flex: 1;">
+                    </div>
+
+                    <div class="extras-container">
+                        <p style="font-weight: bold; margin: 0; color: var(--main-green);">📦 مستلزمات إضافية مطلوبة:</p>
+                        <div class="extras-grid">
+                            <label><input type="checkbox" name="extra" value="توفير مواد تنظيف"> مواد تنظيف</label>
+                            <label><input type="checkbox" name="extra" value="توفير مكنسة كهربائية"> مكنسة كهربائية</label>
+                            <label><input type="checkbox" name="extra" value="خدمة تعقيم إضافية"> تعقيم شامل</label>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="lat" id="lat">
+                    <input type="hidden" name="lon" id="lon">
+                    <div onclick="getLocation()" id="gpsLabel" style="cursor:pointer; color:var(--main-green); font-weight:bold; margin:10px 0;">📍 اضغط لتحديد الموقع</div>
+                    <button type="submit" class="submit-btn">✅ تأكيد طلب الحجز</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="PriceList" class="tab-content">
+            <div class="card">
+                <h2 style="color: var(--main-green);">✨ قائمة أسعار {{ company.name }} ✨</h2>
+                <div class="price-item" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border-right: 5px solid var(--main-green); display: flex; justify-content: space-between; margin-bottom:10px;">
+                    <span>خدمة الـ 4 ساعات</span><span>25 دينار</span>
+                </div>
+                <div class="price-item" style="background: #f9f9f9; padding: 15px; border-radius: 10px; border-right: 5px solid var(--main-green); display: flex; justify-content: space-between;">
+                    <span>خدمة الـ 6 ساعات</span><span>30 دينار</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="tab-content"><div class="card"><h2>من نحن؟</h2><p>نسمة هي منصة أردنية رائدة...</p></div></div>
+        <div id="services" class="tab-content"><div class="card"><h2>خدماتنا</h2><p>رعاية المنازل، الحدائق، الشركات...</p></div></div>
+        <div id="staff" class="tab-content"><div class="card"><h2>كادرنا</h2><p>أمان، خبرة، وسجل أمني نظيف...</p></div></div>
+        <div id="contact" class="tab-content"><div class="card"><h2>اتصل بنا</h2><a href="https://wa.me/962777278329" class="whatsapp-btn">💬 دردشة واتساب مباشرة</a></div></div>
+
+        <p style="font-weight: bold; font-size: 12px; margin-top: 30px;">Nesmajo © 2026</p>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+            var tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active", "");
+            document.getElementById(tabName).style.display = "block";
+            if (evt) evt.currentTarget.className += " active";
+        }
+        function closeTrustModal() { document.getElementById('trustModal').style.display = 'none'; }
+
+        window.onload = function() {
+            setTimeout(function() {
+                const splash = document.getElementById('splash');
+                if(splash) {
+                    splash.style.transition = "0.8s";
+                    splash.style.opacity = "0";
+                    setTimeout(() => splash.style.display = 'none', 800);
+                }
+            }, 1500);
+        };
+
+        function getLocation() {
+            const btn = document.getElementById("gpsLabel");
+            if (navigator.geolocation) {
+                btn.innerText = "⏳ جاري التحديد...";
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    document.getElementById("lat").value = pos.coords.latitude;
+                    document.getElementById("lon").value = pos.coords.longitude;
+                    btn.innerText = "✅ تم تحديد موقعك";
+                    btn.style.color = "#00c853";
+                }, (err) => { btn.innerText = "❌ يرجى تفعيل الموقع"; }, {enableHighAccuracy: true});
+            }
+        }
+    </script>
+</body>
+</html>
